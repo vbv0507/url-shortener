@@ -1,12 +1,12 @@
 const express=require('express');
 const app=express();
-const port=5001;
+const port = process.env.PORT || 5001;
 const urlRoute=require('./routes/url.js')
 const connectdb=require('./connection.js');
 const URL=require('./model/url.js');
 const path=require('path');
-connectdb('mongodb://127.0.0.1:27017/short-url').then(()=>console.log("db connectd")
-)
+require("dotenv").config();
+connectdb(process.env.MONGO_URL)
 app.use(express.json());
 app.set('view engine','ejs');
 app.set('views',path.resolve('./views'));
