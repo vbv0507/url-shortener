@@ -1,0 +1,483 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Shorten URL</title>
+    <style>
+        :root {
+            --bg-1: #f6efe6;
+            --bg-2: #fdf9f4;
+            --card: rgba(255, 255, 255, 0.78);
+            --card-border: rgba(28, 35, 42, 0.1);
+            --text: #182028;
+            --muted: #64707a;
+            --accent: #ff6b4a;
+            --accent-strong: #e14f2f;
+            --accent-soft: rgba(255, 107, 74, 0.12);
+            --shadow: 0 30px 80px rgba(57, 35, 20, 0.14);
+            --radius-xl: 32px;
+            --radius-lg: 22px;
+            --radius-md: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            min-height: 100vh;
+            display: grid;
+            place-items: center;
+            padding: 24px;
+            font-family: "Segoe UI", "Trebuchet MS", sans-serif;
+            color: var(--text);
+            background:
+                radial-gradient(circle at top left, rgba(255, 172, 134, 0.45), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(91, 156, 255, 0.18), transparent 32%),
+                linear-gradient(140deg, var(--bg-1), var(--bg-2));
+        }
+
+        .shell {
+            width: min(100%, 980px);
+        }
+
+        .card {
+            position: relative;
+            overflow: hidden;
+            background: var(--card);
+            border: 1px solid rgba(255, 255, 255, 0.7);
+            box-shadow: var(--shadow);
+            border-radius: var(--radius-xl);
+            backdrop-filter: blur(14px);
+        }
+
+        .card::before {
+            content: "";
+            position: absolute;
+            top: -90px;
+            right: -70px;
+            width: 220px;
+            height: 220px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(255, 107, 74, 0.22), rgba(255, 107, 74, 0));
+            pointer-events: none;
+        }
+
+        .layout {
+            display: grid;
+            grid-template-columns: 1.05fr 0.95fr;
+            min-height: 640px;
+        }
+
+        .content,
+        .form-wrap {
+            padding: 42px;
+        }
+
+        .content {
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border-right: 1px solid rgba(24, 32, 40, 0.08);
+            background:
+                linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04));
+        }
+
+        .pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            width: fit-content;
+            padding: 10px 16px;
+            border-radius: 999px;
+            background: rgba(24, 32, 40, 0.06);
+            color: var(--muted);
+            font-size: 0.92rem;
+            letter-spacing: 0.04em;
+            text-transform: uppercase;
+        }
+
+        h1,
+        h2 {
+            margin: 0;
+            font-family: Georgia, "Times New Roman", serif;
+            letter-spacing: -0.05em;
+        }
+
+        h1 {
+            margin-top: 22px;
+            font-size: clamp(3rem, 8vw, 5.5rem);
+            line-height: 0.92;
+            max-width: 8ch;
+        }
+
+        .lead {
+            margin: 18px 0 0;
+            max-width: 46ch;
+            color: var(--muted);
+            font-size: 1.02rem;
+            line-height: 1.7;
+        }
+
+        .feature-stack {
+            display: grid;
+            gap: 14px;
+            margin-top: 34px;
+        }
+
+        .feature {
+            padding: 18px 20px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(24, 32, 40, 0.07);
+        }
+
+        .feature strong {
+            display: block;
+            font-size: 1rem;
+            margin-bottom: 6px;
+        }
+
+        .feature span {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .form-wrap {
+            display: flex;
+            align-items: center;
+        }
+
+        .form-card {
+            width: 100%;
+            padding: 28px;
+            border-radius: 28px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid var(--card-border);
+        }
+
+        .form-card h2 {
+            font-size: 2rem;
+        }
+
+        .form-card p {
+            margin: 12px 0 24px;
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .shorten-form {
+            display: grid;
+            gap: 14px;
+        }
+
+        .input-label {
+            display: grid;
+            gap: 8px;
+            font-weight: 600;
+            color: var(--muted);
+            font-size: 0.95rem;
+        }
+
+        .input-label input {
+            width: 100%;
+            border: 1px solid rgba(24, 32, 40, 0.12);
+            background: #fff;
+            color: var(--text);
+            padding: 18px 20px;
+            border-radius: var(--radius-md);
+            font: inherit;
+            transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
+        }
+
+        .input-label input:focus {
+            outline: none;
+            border-color: rgba(255, 107, 74, 0.5);
+            box-shadow: 0 0 0 5px rgba(255, 107, 74, 0.12);
+            transform: translateY(-1px);
+        }
+
+        .submit-button,
+        .action-link,
+        .copy-button {
+            min-height: 54px;
+            border: none;
+            border-radius: 999px;
+            font: inherit;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+        }
+
+        .submit-button {
+            background: linear-gradient(135deg, var(--accent), #ff9368);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 20px 30px rgba(225, 79, 47, 0.18);
+            padding: 14px 20px;
+        }
+
+        .submit-button:hover,
+        .action-link:hover,
+        .copy-button:hover {
+            transform: translateY(-1px);
+        }
+
+        .status {
+            min-height: 24px;
+            margin: 14px 0 0;
+            color: var(--muted);
+            line-height: 1.5;
+        }
+
+        .status[data-state="success"] {
+            color: #1e7a5e;
+        }
+
+        .status[data-state="error"] {
+            color: #c3482f;
+        }
+
+        .result {
+            margin-top: 20px;
+            padding: 20px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(180deg, rgba(255, 107, 74, 0.08), rgba(91, 156, 255, 0.05));
+            border: 1px solid rgba(255, 107, 74, 0.14);
+        }
+
+        .result small {
+            display: inline-block;
+            color: var(--muted);
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .result-link {
+            display: inline-block;
+            margin-top: 10px;
+            color: var(--accent-strong);
+            font-size: 1.05rem;
+            font-weight: 700;
+            text-decoration: none;
+            word-break: break-all;
+        }
+
+        .result-link:hover {
+            text-decoration: underline;
+        }
+
+        .result-original {
+            margin: 12px 0 0;
+            color: var(--muted);
+            line-height: 1.6;
+            word-break: break-word;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .action-link,
+        .copy-button {
+            padding: 12px 18px;
+            background: #fff;
+            border: 1px solid rgba(24, 32, 40, 0.1);
+            color: var(--text);
+        }
+
+        .footer-note {
+            margin-top: 18px;
+            color: var(--muted);
+            font-size: 0.93rem;
+        }
+
+        @media (max-width: 860px) {
+            .layout {
+                grid-template-columns: 1fr;
+            }
+
+            .content {
+                border-right: none;
+                border-bottom: 1px solid rgba(24, 32, 40, 0.08);
+            }
+
+            .content,
+            .form-wrap {
+                padding: 28px;
+            }
+
+            .form-card {
+                padding: 22px;
+            }
+        }
+
+        @media (max-width: 560px) {
+            body {
+                padding: 14px;
+            }
+
+            .content,
+            .form-wrap {
+                padding: 22px;
+            }
+
+            .actions {
+                flex-direction: column;
+            }
+
+            .action-link,
+            .copy-button,
+            .submit-button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <main class="shell">
+        <section class="card">
+            <div class="layout">
+                <div class="content">
+                    <div>
+                        <span class="pill">Quick Link Tool</span>
+                        <h1>Turn long links into something clean.</h1>
+                        <p class="lead">
+                            Paste your URL, create a short version in one click, and share a link that looks simple and easy to use.
+                        </p>
+                    </div>
+
+                    <div class="feature-stack">
+                        <div class="feature">
+                            <strong>Fast to create</strong>
+                            <span>Drop in a long URL and generate a short link instantly.</span>
+                        </div>
+                        <div class="feature">
+                            <strong>Easy to share</strong>
+                            <span>Copy the result right away and open it anytime you want.</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-wrap">
+                    <section class="form-card">
+                        <h2>Shorten your URL</h2>
+                        <p>Enter the full link below and get a shorter one back.</p>
+
+                        <form id="shorten-form" class="shorten-form">
+                            <label class="input-label" for="url-input">
+                                URL
+                                <input
+                                    id="url-input"
+                                    name="url"
+                                    type="url"
+                                    placeholder="https://example.com/your-long-link"
+                                    required
+                                >
+                            </label>
+
+                            <button type="submit" class="submit-button">Generate Short URL</button>
+                        </form>
+
+                        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+                        <section id="result" class="result" hidden>
+                            <small>Your shortened link</small>
+                            <a id="result-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
+                            <p id="result-original" class="result-original"></p>
+
+                            <div class="actions">
+                                <button type="button" id="copy-button" class="copy-button">Copy Link</button>
+                                <a id="open-button" class="action-link" href="#" target="_blank" rel="noreferrer">Open Link</a>
+                            </div>
+                        </section>
+
+                        <div class="footer-note">A full URL with `http://` or `https://` works best.</div>
+                    </section>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <script>
+        const form = document.getElementById("shorten-form");
+        const urlInput = document.getElementById("url-input");
+        const statusText = document.getElementById("status");
+        const resultCard = document.getElementById("result");
+        const resultLink = document.getElementById("result-link");
+        const resultOriginal = document.getElementById("result-original");
+        const copyButton = document.getElementById("copy-button");
+        const openButton = document.getElementById("open-button");
+
+        function setStatus(message, state) {
+            statusText.textContent = message;
+            statusText.dataset.state = state || "";
+        }
+
+        async function copyToClipboard(text) {
+            await navigator.clipboard.writeText(text);
+        }
+
+        copyButton.addEventListener("click", async () => {
+            try {
+                await copyToClipboard(resultLink.href);
+                setStatus("Short URL copied to clipboard.", "success");
+            } catch (error) {
+                setStatus("Could not copy automatically. You can still copy the link manually.", "error");
+            }
+        });
+
+        form.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (!form.reportValidity()) {
+                setStatus("Enter a valid URL before submitting.", "error");
+                return;
+            }
+
+            const originalUrl = urlInput.value.trim();
+            setStatus("Generating short URL...", "");
+
+            try {
+                const response = await fetch("/url", {
+                    method: "POST",
+                    headers: {
+                        "Content-Type": "application/json"
+                    },
+                    body: JSON.stringify({ url: originalUrl })
+                });
+
+                let data = {};
+                try {
+                    data = await response.json();
+                } catch (parseError) {
+                    data = {};
+                }
+
+                if (!response.ok) {
+                    throw new Error(data.error || "Unable to shorten this URL right now.");
+                }
+
+                const shortUrl = `${window.location.origin}/url/${data.id}`;
+                resultLink.href = shortUrl;
+                resultLink.textContent = shortUrl;
+                resultOriginal.textContent = `Original: ${originalUrl}`;
+                openButton.href = shortUrl;
+                resultCard.hidden = false;
+                setStatus("Short URL created successfully.", "success");
+            } catch (error) {
+                setStatus(error.message || "Something went wrong while creating the short URL.", "error");
+            }
+        });
+    </script>
+</body>
+</html>
