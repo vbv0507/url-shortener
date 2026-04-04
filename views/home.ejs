@@ -6,19 +6,20 @@
     <title>Shorten URL</title>
     <style>
         :root {
-            --bg-1: #f6efe6;
-            --bg-2: #fdf9f4;
-            --card: rgba(255, 255, 255, 0.78);
-            --card-border: rgba(28, 35, 42, 0.1);
-            --text: #182028;
-            --muted: #64707a;
-            --accent: #ff6b4a;
-            --accent-strong: #e14f2f;
-            --accent-soft: rgba(255, 107, 74, 0.12);
-            --shadow: 0 30px 80px rgba(57, 35, 20, 0.14);
-            --radius-xl: 32px;
-            --radius-lg: 22px;
-            --radius-md: 16px;
+            --bg-main: #f7f1e8;
+            --bg-soft: #fffaf5;
+            --panel: rgba(255, 255, 255, 0.78);
+            --panel-strong: rgba(255, 255, 255, 0.92);
+            --border: rgba(23, 30, 37, 0.1);
+            --text: #1b232c;
+            --muted: #68737e;
+            --accent: #ff6a3d;
+            --accent-deep: #df4f25;
+            --success: #1f7a5f;
+            --shadow: 0 28px 90px rgba(72, 45, 26, 0.14);
+            --radius-xl: 34px;
+            --radius-lg: 24px;
+            --radius-md: 18px;
         }
 
         * {
@@ -28,79 +29,93 @@
         body {
             margin: 0;
             min-height: 100vh;
-            display: grid;
-            place-items: center;
-            padding: 24px;
+            padding: 22px;
             font-family: "Segoe UI", "Trebuchet MS", sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at top left, rgba(255, 172, 134, 0.45), transparent 28%),
-                radial-gradient(circle at bottom right, rgba(91, 156, 255, 0.18), transparent 32%),
-                linear-gradient(140deg, var(--bg-1), var(--bg-2));
+                radial-gradient(circle at top left, rgba(255, 184, 128, 0.42), transparent 30%),
+                radial-gradient(circle at bottom right, rgba(95, 143, 255, 0.16), transparent 26%),
+                linear-gradient(145deg, var(--bg-main), var(--bg-soft));
         }
 
-        .shell {
-            width: min(100%, 980px);
+        a {
+            color: inherit;
         }
 
-        .card {
+        .page {
+            width: min(1100px, 100%);
+            margin: 0 auto;
+        }
+
+        .hero {
             position: relative;
             overflow: hidden;
-            background: var(--card);
-            border: 1px solid rgba(255, 255, 255, 0.7);
-            box-shadow: var(--shadow);
+            background: var(--panel);
+            border: 1px solid rgba(255, 255, 255, 0.74);
             border-radius: var(--radius-xl);
+            box-shadow: var(--shadow);
             backdrop-filter: blur(14px);
         }
 
-        .card::before {
+        .hero::before,
+        .hero::after {
             content: "";
             position: absolute;
-            top: -90px;
-            right: -70px;
-            width: 220px;
-            height: 220px;
             border-radius: 50%;
-            background: radial-gradient(circle, rgba(255, 107, 74, 0.22), rgba(255, 107, 74, 0));
             pointer-events: none;
         }
 
-        .layout {
+        .hero::before {
+            width: 260px;
+            height: 260px;
+            top: -110px;
+            right: -80px;
+            background: radial-gradient(circle, rgba(255, 106, 61, 0.22), rgba(255, 106, 61, 0));
+        }
+
+        .hero::after {
+            width: 220px;
+            height: 220px;
+            bottom: -110px;
+            left: -70px;
+            background: radial-gradient(circle, rgba(95, 143, 255, 0.16), rgba(95, 143, 255, 0));
+        }
+
+        .hero-grid {
             display: grid;
-            grid-template-columns: 1.05fr 0.95fr;
-            min-height: 640px;
+            grid-template-columns: 1fr 1.08fr;
+            min-height: 760px;
         }
 
-        .content,
-        .form-wrap {
-            padding: 42px;
+        .intro,
+        .workspace {
+            padding: 40px;
         }
 
-        .content {
+        .intro {
+            border-right: 1px solid rgba(27, 35, 44, 0.08);
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            border-right: 1px solid rgba(24, 32, 40, 0.08);
-            background:
-                linear-gradient(180deg, rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.04));
         }
 
-        .pill {
+        .badge {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             width: fit-content;
             padding: 10px 16px;
             border-radius: 999px;
-            background: rgba(24, 32, 40, 0.06);
+            background: rgba(27, 35, 44, 0.06);
             color: var(--muted);
-            font-size: 0.92rem;
-            letter-spacing: 0.04em;
+            font-size: 0.9rem;
             text-transform: uppercase;
+            letter-spacing: 0.05em;
         }
 
         h1,
-        h2 {
+        h2,
+        h3 {
             margin: 0;
             font-family: Georgia, "Times New Roman", serif;
             letter-spacing: -0.05em;
@@ -108,123 +123,143 @@
 
         h1 {
             margin-top: 22px;
-            font-size: clamp(3rem, 8vw, 5.5rem);
-            line-height: 0.92;
+            font-size: clamp(3rem, 8vw, 5.6rem);
+            line-height: 0.93;
             max-width: 8ch;
         }
 
-        .lead {
+        .intro-copy {
             margin: 18px 0 0;
-            max-width: 46ch;
+            max-width: 44ch;
             color: var(--muted);
             font-size: 1.02rem;
-            line-height: 1.7;
+            line-height: 1.75;
         }
 
-        .feature-stack {
+        .info-cards {
             display: grid;
             gap: 14px;
-            margin-top: 34px;
         }
 
-        .feature {
+        .info-card {
             padding: 18px 20px;
             border-radius: var(--radius-lg);
             background: rgba(255, 255, 255, 0.58);
-            border: 1px solid rgba(24, 32, 40, 0.07);
+            border: 1px solid rgba(27, 35, 44, 0.07);
         }
 
-        .feature strong {
+        .info-card strong {
             display: block;
-            font-size: 1rem;
             margin-bottom: 6px;
+            font-size: 1rem;
         }
 
-        .feature span {
+        .info-card span {
             color: var(--muted);
             line-height: 1.6;
         }
 
-        .form-wrap {
-            display: flex;
-            align-items: center;
+        .workspace {
+            display: grid;
+            gap: 18px;
+            align-content: center;
         }
 
-        .form-card {
-            width: 100%;
+        .panel {
+            position: relative;
+            z-index: 1;
             padding: 28px;
             border-radius: 28px;
-            background: rgba(255, 255, 255, 0.78);
-            border: 1px solid var(--card-border);
+            background: var(--panel-strong);
+            border: 1px solid var(--border);
         }
 
-        .form-card h2 {
-            font-size: 2rem;
-        }
-
-        .form-card p {
-            margin: 12px 0 24px;
+        .panel p {
+            margin: 12px 0 0;
             color: var(--muted);
-            line-height: 1.6;
+            line-height: 1.65;
         }
 
-        .shorten-form {
+        .form-grid {
             display: grid;
             gap: 14px;
+            margin-top: 22px;
         }
 
-        .input-label {
+        .field {
             display: grid;
             gap: 8px;
+            font-size: 0.95rem;
             font-weight: 600;
             color: var(--muted);
-            font-size: 0.95rem;
         }
 
-        .input-label input {
+        .field input {
             width: 100%;
-            border: 1px solid rgba(24, 32, 40, 0.12);
+            padding: 17px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(27, 35, 44, 0.12);
             background: #fff;
             color: var(--text);
-            padding: 18px 20px;
-            border-radius: var(--radius-md);
             font: inherit;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
 
-        .input-label input:focus {
+        .field input:focus {
             outline: none;
-            border-color: rgba(255, 107, 74, 0.5);
-            box-shadow: 0 0 0 5px rgba(255, 107, 74, 0.12);
+            border-color: rgba(255, 106, 61, 0.45);
+            box-shadow: 0 0 0 5px rgba(255, 106, 61, 0.12);
             transform: translateY(-1px);
         }
 
-        .submit-button,
-        .action-link,
-        .copy-button {
-            min-height: 54px;
+        .button-row,
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        button,
+        .button-link {
             border: none;
-            border-radius: 999px;
             font: inherit;
-            cursor: pointer;
             text-decoration: none;
+            cursor: pointer;
+        }
+
+        .primary-button,
+        .button-link.primary {
+            min-height: 54px;
+            padding: 14px 20px;
+            border-radius: 999px;
+            background: linear-gradient(135deg, var(--accent), #ff9a74);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 18px 28px rgba(223, 79, 37, 0.18);
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .submit-button {
-            background: linear-gradient(135deg, var(--accent), #ff9368);
-            color: #fff;
-            font-weight: 700;
-            box-shadow: 0 20px 30px rgba(225, 79, 47, 0.18);
-            padding: 14px 20px;
+        .ghost-button,
+        .button-link.ghost {
+            min-height: 50px;
+            padding: 12px 18px;
+            border-radius: 999px;
+            background: #fff;
+            border: 1px solid rgba(27, 35, 44, 0.1);
+            color: var(--text);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s ease;
         }
 
-        .submit-button:hover,
-        .action-link:hover,
-        .copy-button:hover {
+        .primary-button:hover,
+        .ghost-button:hover,
+        .button-link:hover {
             transform: translateY(-1px);
         }
 
@@ -236,36 +271,37 @@
         }
 
         .status[data-state="success"] {
-            color: #1e7a5e;
+            color: var(--success);
         }
 
         .status[data-state="error"] {
-            color: #c3482f;
+            color: #c24a30;
         }
 
-        .result {
-            margin-top: 20px;
+        .result-card,
+        .analytics-result {
+            margin-top: 18px;
             padding: 20px;
             border-radius: var(--radius-lg);
-            background: linear-gradient(180deg, rgba(255, 107, 74, 0.08), rgba(91, 156, 255, 0.05));
-            border: 1px solid rgba(255, 107, 74, 0.14);
+            background: linear-gradient(180deg, rgba(255, 106, 61, 0.07), rgba(95, 143, 255, 0.05));
+            border: 1px solid rgba(255, 106, 61, 0.14);
         }
 
-        .result small {
+        .section-label {
             display: inline-block;
             color: var(--muted);
             text-transform: uppercase;
             letter-spacing: 0.05em;
+            font-size: 0.82rem;
             font-weight: 700;
         }
 
         .result-link {
             display: inline-block;
             margin-top: 10px;
-            color: var(--accent-strong);
-            font-size: 1.05rem;
+            font-size: 1.04rem;
             font-weight: 700;
-            text-decoration: none;
+            color: var(--accent-deep);
             word-break: break-all;
         }
 
@@ -273,109 +309,145 @@
             text-decoration: underline;
         }
 
-        .result-original {
+        .original-url {
             margin: 12px 0 0;
             color: var(--muted);
             line-height: 1.6;
             word-break: break-word;
         }
 
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
+        .analytics-summary {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
             margin-top: 18px;
         }
 
-        .action-link,
-        .copy-button {
-            padding: 12px 18px;
-            background: #fff;
-            border: 1px solid rgba(24, 32, 40, 0.1);
+        .stat-box {
+            padding: 18px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(27, 35, 44, 0.08);
+        }
+
+        .stat-box span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.84rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 700;
+        }
+
+        .stat-box strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 2rem;
+            line-height: 1.1;
+            word-break: break-word;
+        }
+
+        .timeline {
+            margin: 18px 0 0;
+            padding: 0;
+            list-style: none;
+            display: grid;
+            gap: 10px;
+        }
+
+        .timeline li {
+            padding: 14px 16px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px solid rgba(27, 35, 44, 0.08);
             color: var(--text);
         }
 
-        .footer-note {
+        .empty-history {
             margin-top: 18px;
+            padding: 16px 18px;
+            border-radius: var(--radius-md);
+            background: rgba(255, 255, 255, 0.72);
+            border: 1px dashed rgba(27, 35, 44, 0.14);
             color: var(--muted);
-            font-size: 0.93rem;
         }
 
-        @media (max-width: 860px) {
-            .layout {
+        @media (max-width: 940px) {
+            .hero-grid {
                 grid-template-columns: 1fr;
             }
 
-            .content {
+            .intro {
                 border-right: none;
-                border-bottom: 1px solid rgba(24, 32, 40, 0.08);
-            }
-
-            .content,
-            .form-wrap {
-                padding: 28px;
-            }
-
-            .form-card {
-                padding: 22px;
+                border-bottom: 1px solid rgba(27, 35, 44, 0.08);
             }
         }
 
-        @media (max-width: 560px) {
+        @media (max-width: 620px) {
             body {
                 padding: 14px;
             }
 
-            .content,
-            .form-wrap {
+            .intro,
+            .workspace {
+                padding: 24px;
+            }
+
+            .panel {
                 padding: 22px;
             }
 
-            .actions {
-                flex-direction: column;
+            .analytics-summary {
+                grid-template-columns: 1fr;
             }
 
-            .action-link,
-            .copy-button,
-            .submit-button {
+            .button-row,
+            .actions {
+                flex-direction: column;
+                align-items: stretch;
+            }
+
+            .primary-button,
+            .ghost-button,
+            .button-link {
                 width: 100%;
             }
         }
     </style>
 </head>
 <body>
-    <main class="shell">
-        <section class="card">
-            <div class="layout">
-                <div class="content">
+    <main class="page">
+        <section class="hero">
+            <div class="hero-grid">
+                <section class="intro">
                     <div>
-                        <span class="pill">Quick Link Tool</span>
-                        <h1>Turn long links into something clean.</h1>
-                        <p class="lead">
-                            Paste your URL, create a short version in one click, and share a link that looks simple and easy to use.
+                        <span class="badge">Smart Links</span>
+                        <h1>Shorten it. Share it. Track it.</h1>
+                        <p class="intro-copy">
+                            Create a short URL in one step, then check click activity anytime with the same clean interface.
                         </p>
                     </div>
 
-                    <div class="feature-stack">
-                        <div class="feature">
-                            <strong>Fast to create</strong>
-                            <span>Drop in a long URL and generate a short link instantly.</span>
+                    <div class="info-cards">
+                        <div class="info-card">
+                            <strong>Create short links fast</strong>
+                            <span>Drop any long URL into the form and get a short one back instantly.</span>
                         </div>
-                        <div class="feature">
-                            <strong>Easy to share</strong>
-                            <span>Copy the result right away and open it anytime you want.</span>
+                        <div class="info-card">
+                            <strong>Check analytics anytime</strong>
+                            <span>Paste a short id or short URL to see total clicks and visit history.</span>
                         </div>
                     </div>
-                </div>
+                </section>
 
-                <div class="form-wrap">
-                    <section class="form-card">
+                <section class="workspace">
+                    <article class="panel">
                         <h2>Shorten your URL</h2>
-                        <p>Enter the full link below and get a shorter one back.</p>
+                        <p>Enter the full URL below and generate a short link.</p>
 
-                        <form id="shorten-form" class="shorten-form">
-                            <label class="input-label" for="url-input">
-                                URL
+                        <form id="shorten-form" class="form-grid">
+                            <label class="field" for="url-input">
+                                Long URL
                                 <input
                                     id="url-input"
                                     name="url"
@@ -385,67 +457,205 @@
                                 >
                             </label>
 
-                            <button type="submit" class="submit-button">Generate Short URL</button>
+                            <div class="button-row">
+                                <button type="submit" class="primary-button">Generate Short URL</button>
+                            </div>
                         </form>
 
-                        <p id="status" class="status" role="status" aria-live="polite"></p>
+                        <p id="shorten-status" class="status" role="status" aria-live="polite"></p>
 
-                        <section id="result" class="result" hidden>
-                            <small>Your shortened link</small>
+                        <section id="result-card" class="result-card" hidden>
+                            <span class="section-label">Short URL</span>
                             <a id="result-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
-                            <p id="result-original" class="result-original"></p>
+                            <p id="result-original" class="original-url"></p>
 
                             <div class="actions">
-                                <button type="button" id="copy-button" class="copy-button">Copy Link</button>
-                                <a id="open-button" class="action-link" href="#" target="_blank" rel="noreferrer">Open Link</a>
+                                <button type="button" id="copy-button" class="ghost-button">Copy Link</button>
+                                <a id="open-button" class="button-link ghost" href="#" target="_blank" rel="noreferrer">Open Link</a>
+                                <button type="button" id="load-latest-analytics" class="ghost-button">Get Analytics</button>
                             </div>
                         </section>
+                    </article>
 
-                        <div class="footer-note">A full URL with `http://` or `https://` works best.</div>
-                    </section>
-                </div>
+                    <article class="panel">
+                        <h2>Get analytics</h2>
+                        <p>Enter a short id like <code>abc12</code> or a short URL like <code>/url/abc12</code>.</p>
+
+                        <form id="analytics-form" class="form-grid">
+                            <label class="field" for="analytics-input">
+                                Short ID or Short URL
+                                <input
+                                    id="analytics-input"
+                                    name="shortId"
+                                    type="text"
+                                    placeholder="abc12 or http://localhost:5001/url/abc12"
+                                    required
+                                >
+                            </label>
+
+                            <div class="button-row">
+                                <button type="submit" class="primary-button">Fetch Analytics</button>
+                            </div>
+                        </form>
+
+                        <p id="analytics-status" class="status" role="status" aria-live="polite"></p>
+
+                        <section id="analytics-result" class="analytics-result" hidden>
+                            <span class="section-label">Analytics Result</span>
+
+                            <div class="analytics-summary">
+                                <div class="stat-box">
+                                    <span>Short Path</span>
+                                    <strong id="analytics-short-path">/url/</strong>
+                                </div>
+                                <div class="stat-box">
+                                    <span>Total Clicks</span>
+                                    <strong id="analytics-click-count">0</strong>
+                                </div>
+                            </div>
+
+                            <div class="actions" style="margin-top: 16px;">
+                                <a id="analytics-json-link" class="button-link ghost" href="#" target="_blank" rel="noreferrer">Open Analytics JSON</a>
+                            </div>
+
+                            <div id="empty-history" class="empty-history" hidden>No visits recorded yet for this short URL.</div>
+                            <ul id="analytics-history" class="timeline"></ul>
+                        </section>
+                    </article>
+                </section>
             </div>
         </section>
     </main>
 
     <script>
-        const form = document.getElementById("shorten-form");
+        const shortenForm = document.getElementById("shorten-form");
         const urlInput = document.getElementById("url-input");
-        const statusText = document.getElementById("status");
-        const resultCard = document.getElementById("result");
+        const shortenStatus = document.getElementById("shorten-status");
+        const resultCard = document.getElementById("result-card");
         const resultLink = document.getElementById("result-link");
         const resultOriginal = document.getElementById("result-original");
         const copyButton = document.getElementById("copy-button");
         const openButton = document.getElementById("open-button");
+        const latestAnalyticsButton = document.getElementById("load-latest-analytics");
 
-        function setStatus(message, state) {
-            statusText.textContent = message;
-            statusText.dataset.state = state || "";
+        const analyticsForm = document.getElementById("analytics-form");
+        const analyticsInput = document.getElementById("analytics-input");
+        const analyticsStatus = document.getElementById("analytics-status");
+        const analyticsResult = document.getElementById("analytics-result");
+        const analyticsShortPath = document.getElementById("analytics-short-path");
+        const analyticsClickCount = document.getElementById("analytics-click-count");
+        const analyticsHistory = document.getElementById("analytics-history");
+        const analyticsJsonLink = document.getElementById("analytics-json-link");
+        const emptyHistory = document.getElementById("empty-history");
+
+        let latestShortId = "";
+
+        function setStatus(element, message, state) {
+            element.textContent = message;
+            element.dataset.state = state || "";
         }
 
         async function copyToClipboard(text) {
             await navigator.clipboard.writeText(text);
         }
 
+        function extractShortId(value) {
+            const trimmed = value.trim();
+
+            if (!trimmed) {
+                return "";
+            }
+
+            if (/^https?:\/\//i.test(trimmed)) {
+                try {
+                    const parsedUrl = new URL(trimmed);
+                    const parts = parsedUrl.pathname.split("/").filter(Boolean);
+                    return parts[parts.length - 1] || "";
+                } catch (error) {
+                    return "";
+                }
+            }
+
+            const parts = trimmed.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean);
+            return parts[parts.length - 1] || "";
+        }
+
+        function renderAnalytics(shortId, payload) {
+            const entries = Array.isArray(payload.analytics) ? payload.analytics.slice().reverse() : [];
+
+            analyticsShortPath.textContent = `/url/${shortId}`;
+            analyticsClickCount.textContent = String(payload.totalClicks || 0);
+            analyticsJsonLink.href = `/url/analytics/${shortId}`;
+            analyticsHistory.innerHTML = "";
+
+            if (!entries.length) {
+                emptyHistory.hidden = false;
+            } else {
+                emptyHistory.hidden = true;
+                entries.forEach((entry) => {
+                    const item = document.createElement("li");
+                    item.textContent = entry.timestamp;
+                    analyticsHistory.appendChild(item);
+                });
+            }
+
+            analyticsResult.hidden = false;
+        }
+
+        async function fetchAnalytics(shortId) {
+            setStatus(analyticsStatus, "Fetching analytics...", "");
+
+            const response = await fetch(`/url/analytics/${shortId}`);
+
+            let data = {};
+            try {
+                data = await response.json();
+            } catch (parseError) {
+                data = {};
+            }
+
+            if (!response.ok) {
+                throw new Error(data.error || "Unable to fetch analytics right now.");
+            }
+
+            renderAnalytics(shortId, data);
+            setStatus(analyticsStatus, "Analytics loaded successfully.", "success");
+        }
+
         copyButton.addEventListener("click", async () => {
             try {
                 await copyToClipboard(resultLink.href);
-                setStatus("Short URL copied to clipboard.", "success");
+                setStatus(shortenStatus, "Short URL copied to clipboard.", "success");
             } catch (error) {
-                setStatus("Could not copy automatically. You can still copy the link manually.", "error");
+                setStatus(shortenStatus, "Could not copy automatically. You can still copy the link manually.", "error");
             }
         });
 
-        form.addEventListener("submit", async (event) => {
+        latestAnalyticsButton.addEventListener("click", async () => {
+            if (!latestShortId) {
+                setStatus(analyticsStatus, "Create a short URL first or enter an existing short id below.", "error");
+                return;
+            }
+
+            analyticsInput.value = `${window.location.origin}/url/${latestShortId}`;
+
+            try {
+                await fetchAnalytics(latestShortId);
+            } catch (error) {
+                setStatus(analyticsStatus, error.message || "Unable to fetch analytics right now.", "error");
+            }
+        });
+
+        shortenForm.addEventListener("submit", async (event) => {
             event.preventDefault();
 
-            if (!form.reportValidity()) {
-                setStatus("Enter a valid URL before submitting.", "error");
+            if (!shortenForm.reportValidity()) {
+                setStatus(shortenStatus, "Enter a valid URL before submitting.", "error");
                 return;
             }
 
             const originalUrl = urlInput.value.trim();
-            setStatus("Generating short URL...", "");
+            setStatus(shortenStatus, "Generating short URL...", "");
 
             try {
                 const response = await fetch("/url", {
@@ -467,15 +677,46 @@
                     throw new Error(data.error || "Unable to shorten this URL right now.");
                 }
 
+                latestShortId = data.id;
                 const shortUrl = `${window.location.origin}/url/${data.id}`;
+
                 resultLink.href = shortUrl;
                 resultLink.textContent = shortUrl;
                 resultOriginal.textContent = `Original: ${originalUrl}`;
                 openButton.href = shortUrl;
+                analyticsInput.value = shortUrl;
                 resultCard.hidden = false;
-                setStatus("Short URL created successfully.", "success");
+                setStatus(shortenStatus, "Short URL created successfully.", "success");
+
+                try {
+                    await fetchAnalytics(data.id);
+                } catch (error) {
+                    setStatus(analyticsStatus, error.message || "Unable to fetch analytics right now.", "error");
+                }
             } catch (error) {
-                setStatus(error.message || "Something went wrong while creating the short URL.", "error");
+                setStatus(shortenStatus, error.message || "Something went wrong while creating the short URL.", "error");
+            }
+        });
+
+        analyticsForm.addEventListener("submit", async (event) => {
+            event.preventDefault();
+
+            if (!analyticsForm.reportValidity()) {
+                setStatus(analyticsStatus, "Enter a short id or short URL first.", "error");
+                return;
+            }
+
+            const shortId = extractShortId(analyticsInput.value);
+
+            if (!shortId) {
+                setStatus(analyticsStatus, "Please enter a valid short id or short URL.", "error");
+                return;
+            }
+
+            try {
+                await fetchAnalytics(shortId);
+            } catch (error) {
+                setStatus(analyticsStatus, error.message || "Unable to fetch analytics right now.", "error");
             }
         });
     </script>
