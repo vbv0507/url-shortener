@@ -2,6 +2,7 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
+const URL = require("./model/url.js");
 
 const app = express();
 const port = process.env.PORT || 5001;
@@ -14,11 +15,15 @@ connectdb(process.env.MONGO_URL)
   .catch((err) => console.log("Mongo error", err));
 
 app.use(express.json());
+app.use(express.static(path.resolve("./public")));
 app.set("view engine", "ejs");
 app.set("views", path.resolve("./views"));
 
-function renderHome(req, res) {
-  return res.render("home");
+async function renderHome(req, res) {
+  const allurls = await URL.find({}).sort({ createdAt: -1 }).lean();
+  return res.render("home", {
+    urls: allurls,
+  });
 }
 
 app.get("/", renderHome);

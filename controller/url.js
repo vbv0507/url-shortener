@@ -11,6 +11,7 @@ async function generateNewshortUrl(req, res) {
   });
   return res.status(200).json({ id: shortid });
 }
+
 async function redirecturl(req, res) {
   const shortId = req.params.shortId;
   const entry = await URL.findOneAndUpdate(
@@ -42,4 +43,5 @@ async function getanalytics(req, res) {
     analytics: result.visitHistory,
   });
 }
+
 module.exports = { generateNewshortUrl, redirecturl, getanalytics };

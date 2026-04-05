@@ -8,14 +8,15 @@
         :root {
             --bg-main: #f7f1e8;
             --bg-soft: #fffaf5;
-            --panel: rgba(255, 255, 255, 0.78);
-            --panel-strong: rgba(255, 255, 255, 0.92);
+            --panel: rgba(255, 255, 255, 0.8);
+            --panel-strong: rgba(255, 255, 255, 0.94);
             --border: rgba(23, 30, 37, 0.1);
             --text: #1b232c;
             --muted: #68737e;
             --accent: #ff6a3d;
             --accent-deep: #df4f25;
             --success: #1f7a5f;
+            --danger: #c24a30;
             --shadow: 0 28px 90px rgba(72, 45, 26, 0.14);
             --radius-xl: 34px;
             --radius-lg: 24px;
@@ -42,12 +43,17 @@
             color: inherit;
         }
 
+        button,
+        input {
+            font: inherit;
+        }
+
         .page {
-            width: min(1100px, 100%);
+            width: min(1120px, 100%);
             margin: 0 auto;
         }
 
-        .hero {
+        .shell {
             position: relative;
             overflow: hidden;
             background: var(--panel);
@@ -57,15 +63,15 @@
             backdrop-filter: blur(14px);
         }
 
-        .hero::before,
-        .hero::after {
+        .shell::before,
+        .shell::after {
             content: "";
             position: absolute;
             border-radius: 50%;
             pointer-events: none;
         }
 
-        .hero::before {
+        .shell::before {
             width: 260px;
             height: 260px;
             top: -110px;
@@ -73,7 +79,7 @@
             background: radial-gradient(circle, rgba(255, 106, 61, 0.22), rgba(255, 106, 61, 0));
         }
 
-        .hero::after {
+        .shell::after {
             width: 220px;
             height: 220px;
             bottom: -110px;
@@ -81,7 +87,7 @@
             background: radial-gradient(circle, rgba(95, 143, 255, 0.16), rgba(95, 143, 255, 0));
         }
 
-        .hero-grid {
+        .grid {
             display: grid;
             grid-template-columns: 1fr 1.08fr;
             min-height: 760px;
@@ -96,7 +102,8 @@
             border-right: 1px solid rgba(27, 35, 44, 0.08);
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            justify-content: flex-start;
+            gap: 36px;
         }
 
         .badge {
@@ -162,7 +169,7 @@
         .workspace {
             display: grid;
             gap: 18px;
-            align-content: center;
+            align-content: start;
         }
 
         .panel {
@@ -201,7 +208,6 @@
             border: 1px solid rgba(27, 35, 44, 0.12);
             background: #fff;
             color: var(--text);
-            font: inherit;
             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
 
@@ -220,41 +226,33 @@
             align-items: center;
         }
 
-        button,
+        .primary-button,
+        .ghost-button,
         .button-link {
+            min-height: 52px;
+            padding: 12px 18px;
+            border-radius: 999px;
             border: none;
-            font: inherit;
             text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
             cursor: pointer;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .primary-button,
-        .button-link.primary {
-            min-height: 54px;
-            padding: 14px 20px;
-            border-radius: 999px;
+        .primary-button {
             background: linear-gradient(135deg, var(--accent), #ff9a74);
             color: #fff;
             font-weight: 700;
             box-shadow: 0 18px 28px rgba(223, 79, 37, 0.18);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
         .ghost-button,
-        .button-link.ghost {
-            min-height: 50px;
-            padding: 12px 18px;
-            border-radius: 999px;
+        .button-link {
             background: #fff;
             border: 1px solid rgba(27, 35, 44, 0.1);
             color: var(--text);
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            transition: transform 0.2s ease;
         }
 
         .primary-button:hover,
@@ -270,12 +268,12 @@
             line-height: 1.5;
         }
 
-        .status[data-state="success"] {
+        .status.success {
             color: var(--success);
         }
 
-        .status[data-state="error"] {
-            color: #c24a30;
+        .status.error {
+            color: var(--danger);
         }
 
         .result-card,
@@ -285,6 +283,11 @@
             border-radius: var(--radius-lg);
             background: linear-gradient(180deg, rgba(255, 106, 61, 0.07), rgba(95, 143, 255, 0.05));
             border: 1px solid rgba(255, 106, 61, 0.14);
+        }
+
+        .result-card[hidden],
+        .analytics-result[hidden] {
+            display: none;
         }
 
         .section-label {
@@ -373,7 +376,7 @@
         }
 
         @media (max-width: 940px) {
-            .hero-grid {
+            .grid {
                 grid-template-columns: 1fr;
             }
 
@@ -417,8 +420,8 @@
 </head>
 <body>
     <main class="page">
-        <section class="hero">
-            <div class="hero-grid">
+        <section class="shell">
+            <div class="grid">
                 <section class="intro">
                     <div>
                         <span class="badge">Smart Links</span>
@@ -464,15 +467,15 @@
 
                         <p id="shorten-status" class="status" role="status" aria-live="polite"></p>
 
-                        <section id="result-card" class="result-card" hidden>
+                        <section id="shorten-result" class="result-card" hidden>
                             <span class="section-label">Short URL</span>
-                            <a id="result-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
-                            <p id="result-original" class="original-url"></p>
+                            <a id="short-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
+                            <p id="original-url" class="original-url"></p>
 
                             <div class="actions">
-                                <button type="button" id="copy-button" class="ghost-button">Copy Link</button>
-                                <a id="open-button" class="button-link ghost" href="#" target="_blank" rel="noreferrer">Open Link</a>
-                                <button type="button" id="load-latest-analytics" class="ghost-button">Get Analytics</button>
+                                <a id="open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Link</a>
+                                <button type="button" id="copy-link" class="ghost-button">Copy Link</button>
+                                <button type="button" id="use-for-analytics" class="ghost-button">Get Analytics</button>
                             </div>
                         </section>
                     </article>
@@ -506,19 +509,19 @@
                             <div class="analytics-summary">
                                 <div class="stat-box">
                                     <span>Short Path</span>
-                                    <strong id="analytics-short-path">/url/</strong>
+                                    <strong id="analytics-path">/url/</strong>
                                 </div>
                                 <div class="stat-box">
                                     <span>Total Clicks</span>
-                                    <strong id="analytics-click-count">0</strong>
+                                    <strong id="analytics-clicks">0</strong>
                                 </div>
                             </div>
 
                             <div class="actions" style="margin-top: 16px;">
-                                <a id="analytics-json-link" class="button-link ghost" href="#" target="_blank" rel="noreferrer">Open Analytics JSON</a>
+                                <a id="analytics-json" class="button-link" href="#" target="_blank" rel="noreferrer">Open Analytics JSON</a>
                             </div>
 
-                            <div id="empty-history" class="empty-history" hidden>No visits recorded yet for this short URL.</div>
+                            <div id="analytics-empty" class="empty-history" hidden>No visits recorded yet for this short URL.</div>
                             <ul id="analytics-history" class="timeline"></ul>
                         </section>
                     </article>
@@ -527,198 +530,6 @@
         </section>
     </main>
 
-    <script>
-        const shortenForm = document.getElementById("shorten-form");
-        const urlInput = document.getElementById("url-input");
-        const shortenStatus = document.getElementById("shorten-status");
-        const resultCard = document.getElementById("result-card");
-        const resultLink = document.getElementById("result-link");
-        const resultOriginal = document.getElementById("result-original");
-        const copyButton = document.getElementById("copy-button");
-        const openButton = document.getElementById("open-button");
-        const latestAnalyticsButton = document.getElementById("load-latest-analytics");
-
-        const analyticsForm = document.getElementById("analytics-form");
-        const analyticsInput = document.getElementById("analytics-input");
-        const analyticsStatus = document.getElementById("analytics-status");
-        const analyticsResult = document.getElementById("analytics-result");
-        const analyticsShortPath = document.getElementById("analytics-short-path");
-        const analyticsClickCount = document.getElementById("analytics-click-count");
-        const analyticsHistory = document.getElementById("analytics-history");
-        const analyticsJsonLink = document.getElementById("analytics-json-link");
-        const emptyHistory = document.getElementById("empty-history");
-
-        let latestShortId = "";
-
-        function setStatus(element, message, state) {
-            element.textContent = message;
-            element.dataset.state = state || "";
-        }
-
-        async function copyToClipboard(text) {
-            await navigator.clipboard.writeText(text);
-        }
-
-        function extractShortId(value) {
-            const trimmed = value.trim();
-
-            if (!trimmed) {
-                return "";
-            }
-
-            if (/^https?:\/\//i.test(trimmed)) {
-                try {
-                    const parsedUrl = new URL(trimmed);
-                    const parts = parsedUrl.pathname.split("/").filter(Boolean);
-                    return parts[parts.length - 1] || "";
-                } catch (error) {
-                    return "";
-                }
-            }
-
-            const parts = trimmed.replace(/^\/+|\/+$/g, "").split("/").filter(Boolean);
-            return parts[parts.length - 1] || "";
-        }
-
-        function renderAnalytics(shortId, payload) {
-            const entries = Array.isArray(payload.analytics) ? payload.analytics.slice().reverse() : [];
-
-            analyticsShortPath.textContent = `/url/${shortId}`;
-            analyticsClickCount.textContent = String(payload.totalClicks || 0);
-            analyticsJsonLink.href = `/url/analytics/${shortId}`;
-            analyticsHistory.innerHTML = "";
-
-            if (!entries.length) {
-                emptyHistory.hidden = false;
-            } else {
-                emptyHistory.hidden = true;
-                entries.forEach((entry) => {
-                    const item = document.createElement("li");
-                    item.textContent = entry.timestamp;
-                    analyticsHistory.appendChild(item);
-                });
-            }
-
-            analyticsResult.hidden = false;
-        }
-
-        async function fetchAnalytics(shortId) {
-            setStatus(analyticsStatus, "Fetching analytics...", "");
-
-            const response = await fetch(`/url/analytics/${shortId}`);
-
-            let data = {};
-            try {
-                data = await response.json();
-            } catch (parseError) {
-                data = {};
-            }
-
-            if (!response.ok) {
-                throw new Error(data.error || "Unable to fetch analytics right now.");
-            }
-
-            renderAnalytics(shortId, data);
-            setStatus(analyticsStatus, "Analytics loaded successfully.", "success");
-        }
-
-        copyButton.addEventListener("click", async () => {
-            try {
-                await copyToClipboard(resultLink.href);
-                setStatus(shortenStatus, "Short URL copied to clipboard.", "success");
-            } catch (error) {
-                setStatus(shortenStatus, "Could not copy automatically. You can still copy the link manually.", "error");
-            }
-        });
-
-        latestAnalyticsButton.addEventListener("click", async () => {
-            if (!latestShortId) {
-                setStatus(analyticsStatus, "Create a short URL first or enter an existing short id below.", "error");
-                return;
-            }
-
-            analyticsInput.value = `${window.location.origin}/url/${latestShortId}`;
-
-            try {
-                await fetchAnalytics(latestShortId);
-            } catch (error) {
-                setStatus(analyticsStatus, error.message || "Unable to fetch analytics right now.", "error");
-            }
-        });
-
-        shortenForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            if (!shortenForm.reportValidity()) {
-                setStatus(shortenStatus, "Enter a valid URL before submitting.", "error");
-                return;
-            }
-
-            const originalUrl = urlInput.value.trim();
-            setStatus(shortenStatus, "Generating short URL...", "");
-
-            try {
-                const response = await fetch("/url", {
-                    method: "POST",
-                    headers: {
-                        "Content-Type": "application/json"
-                    },
-                    body: JSON.stringify({ url: originalUrl })
-                });
-
-                let data = {};
-                try {
-                    data = await response.json();
-                } catch (parseError) {
-                    data = {};
-                }
-
-                if (!response.ok) {
-                    throw new Error(data.error || "Unable to shorten this URL right now.");
-                }
-
-                latestShortId = data.id;
-                const shortUrl = `${window.location.origin}/url/${data.id}`;
-
-                resultLink.href = shortUrl;
-                resultLink.textContent = shortUrl;
-                resultOriginal.textContent = `Original: ${originalUrl}`;
-                openButton.href = shortUrl;
-                analyticsInput.value = shortUrl;
-                resultCard.hidden = false;
-                setStatus(shortenStatus, "Short URL created successfully.", "success");
-
-                try {
-                    await fetchAnalytics(data.id);
-                } catch (error) {
-                    setStatus(analyticsStatus, error.message || "Unable to fetch analytics right now.", "error");
-                }
-            } catch (error) {
-                setStatus(shortenStatus, error.message || "Something went wrong while creating the short URL.", "error");
-            }
-        });
-
-        analyticsForm.addEventListener("submit", async (event) => {
-            event.preventDefault();
-
-            if (!analyticsForm.reportValidity()) {
-                setStatus(analyticsStatus, "Enter a short id or short URL first.", "error");
-                return;
-            }
-
-            const shortId = extractShortId(analyticsInput.value);
-
-            if (!shortId) {
-                setStatus(analyticsStatus, "Please enter a valid short id or short URL.", "error");
-                return;
-            }
-
-            try {
-                await fetchAnalytics(shortId);
-            } catch (error) {
-                setStatus(analyticsStatus, error.message || "Unable to fetch analytics right now.", "error");
-            }
-        });
-    </script>
+    <script src="/js/home.js"></script>
 </body>
 </html>
