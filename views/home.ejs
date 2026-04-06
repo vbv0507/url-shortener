@@ -3,21 +3,44 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Shorten URL</title>
+    <title>Free URL Shortener for Students | urlzap.me</title>
+    <meta name="description" content="Shorten long URLs instantly. Perfect for students, developers, and WhatsApp sharing. Free URL shortener with analytics.">
+    <meta name="keywords" content="url shortener, free link shortener, shorten url, render link shortener, student tools">
+    <meta name="author" content="Vaibhav Rai">
+    <meta name="robots" content="index, follow">
+    <link rel="canonical" href="https://urlzap.me/">
+    <meta property="og:title" content="Free URL Shortener for Students | urlzap.me">
+    <meta property="og:description" content="Shorten long URLs instantly. Perfect for students, developers, and WhatsApp sharing. Free URL shortener with analytics.">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="https://urlzap.me/">
+    <meta name="twitter:card" content="summary">
+    <script type="application/ld+json">
+        {
+            "@context": "https://schema.org",
+            "@type": "WebSite",
+            "name": "urlzap.me",
+            "url": "https://urlzap.me/",
+            "author": {
+                "@type": "Person",
+                "name": "Vaibhav Rai"
+            },
+            "description": "Free URL shortener for students and developers to shorten long links and track clicks."
+        }
+    </script>
     <style>
         :root {
-            --bg-main: #f7f1e8;
-            --bg-soft: #fffaf5;
-            --panel: rgba(255, 255, 255, 0.8);
-            --panel-strong: rgba(255, 255, 255, 0.94);
-            --border: rgba(23, 30, 37, 0.1);
-            --text: #1b232c;
-            --muted: #68737e;
-            --accent: #ff6a3d;
-            --accent-deep: #df4f25;
-            --success: #1f7a5f;
-            --danger: #c24a30;
-            --shadow: 0 28px 90px rgba(72, 45, 26, 0.14);
+            --bg-cream: #f7efe4;
+            --bg-paper: #fffaf5;
+            --panel: rgba(255, 255, 255, 0.82);
+            --panel-strong: rgba(255, 255, 255, 0.95);
+            --line: rgba(24, 31, 38, 0.1);
+            --text: #182028;
+            --muted: #66727d;
+            --accent: #ff7447;
+            --accent-deep: #dd5429;
+            --success: #1f7a61;
+            --danger: #c44832;
+            --shadow: 0 28px 90px rgba(74, 44, 23, 0.14);
             --radius-xl: 34px;
             --radius-lg: 24px;
             --radius-md: 18px;
@@ -30,17 +53,13 @@
         body {
             margin: 0;
             min-height: 100vh;
-            padding: 22px;
+            padding: 24px;
             font-family: "Segoe UI", "Trebuchet MS", sans-serif;
             color: var(--text);
             background:
-                radial-gradient(circle at top left, rgba(255, 184, 128, 0.42), transparent 30%),
-                radial-gradient(circle at bottom right, rgba(95, 143, 255, 0.16), transparent 26%),
-                linear-gradient(145deg, var(--bg-main), var(--bg-soft));
-        }
-
-        a {
-            color: inherit;
+                radial-gradient(circle at top left, rgba(255, 190, 145, 0.44), transparent 28%),
+                radial-gradient(circle at bottom right, rgba(110, 151, 255, 0.16), transparent 30%),
+                linear-gradient(145deg, var(--bg-cream), var(--bg-paper));
         }
 
         button,
@@ -48,76 +67,84 @@
             font: inherit;
         }
 
+        a {
+            color: inherit;
+        }
+
+        [hidden] {
+            display: none !important;
+        }
+
         .page {
-            width: min(1120px, 100%);
+            width: min(1160px, 100%);
             margin: 0 auto;
         }
 
-        .shell {
+        .view-shell {
             position: relative;
             overflow: hidden;
             background: var(--panel);
-            border: 1px solid rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(255, 255, 255, 0.72);
             border-radius: var(--radius-xl);
             box-shadow: var(--shadow);
-            backdrop-filter: blur(14px);
+            backdrop-filter: blur(16px);
         }
 
-        .shell::before,
-        .shell::after {
+        .view-shell::before,
+        .view-shell::after {
             content: "";
             position: absolute;
             border-radius: 50%;
             pointer-events: none;
         }
 
-        .shell::before {
-            width: 260px;
-            height: 260px;
-            top: -110px;
-            right: -80px;
-            background: radial-gradient(circle, rgba(255, 106, 61, 0.22), rgba(255, 106, 61, 0));
+        .view-shell::before {
+            top: -130px;
+            right: -90px;
+            width: 280px;
+            height: 280px;
+            background: radial-gradient(circle, rgba(255, 116, 71, 0.22), rgba(255, 116, 71, 0));
         }
 
-        .shell::after {
-            width: 220px;
-            height: 220px;
-            bottom: -110px;
-            left: -70px;
-            background: radial-gradient(circle, rgba(95, 143, 255, 0.16), rgba(95, 143, 255, 0));
+        .view-shell::after {
+            bottom: -120px;
+            left: -90px;
+            width: 240px;
+            height: 240px;
+            background: radial-gradient(circle, rgba(110, 151, 255, 0.16), rgba(110, 151, 255, 0));
         }
 
-        .grid {
+        .split-grid {
             display: grid;
-            grid-template-columns: 1fr 1.08fr;
+            grid-template-columns: 1.02fr 0.98fr;
             min-height: 760px;
         }
 
         .intro,
-        .workspace {
-            padding: 40px;
+        .right-side {
+            padding: 42px;
         }
 
         .intro {
-            border-right: 1px solid rgba(27, 35, 44, 0.08);
+            border-right: 1px solid rgba(24, 31, 38, 0.08);
             display: flex;
             flex-direction: column;
             justify-content: flex-start;
-            gap: 36px;
+            gap: 28px;
         }
 
-        .badge {
+        .pill {
             display: inline-flex;
             align-items: center;
             gap: 8px;
             width: fit-content;
             padding: 10px 16px;
             border-radius: 999px;
-            background: rgba(27, 35, 44, 0.06);
+            background: rgba(24, 31, 38, 0.06);
             color: var(--muted);
             font-size: 0.9rem;
-            text-transform: uppercase;
             letter-spacing: 0.05em;
+            text-transform: uppercase;
         }
 
         h1,
@@ -126,33 +153,79 @@
             margin: 0;
             font-family: Georgia, "Times New Roman", serif;
             letter-spacing: -0.05em;
+            text-wrap: balance;
         }
 
         h1 {
             margin-top: 22px;
             font-size: clamp(3rem, 8vw, 5.6rem);
-            line-height: 0.93;
+            line-height: 0.92;
             max-width: 8ch;
         }
 
         .intro-copy {
             margin: 18px 0 0;
-            max-width: 44ch;
+            max-width: 46ch;
             color: var(--muted);
-            font-size: 1.02rem;
+            font-size: 1.04rem;
             line-height: 1.75;
         }
 
-        .info-cards {
+        .info-list {
             display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
+        }
+
+        .hero-visual {
+            position: relative;
+            overflow: hidden;
+            border-radius: 28px;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 246, 241, 0.86)),
+                linear-gradient(135deg, rgba(255, 116, 71, 0.08), rgba(110, 151, 255, 0.08));
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            min-height: 250px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+
+        .hero-visual::before,
+        .hero-visual::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .hero-visual::before {
+            width: 180px;
+            height: 180px;
+            top: -70px;
+            right: -50px;
+            background: radial-gradient(circle, rgba(255, 116, 71, 0.2), rgba(255, 116, 71, 0));
+        }
+
+        .hero-visual::after {
+            width: 150px;
+            height: 150px;
+            bottom: -60px;
+            left: -40px;
+            background: radial-gradient(circle, rgba(110, 151, 255, 0.16), rgba(110, 151, 255, 0));
+        }
+
+        .hero-visual svg {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
         }
 
         .info-card {
             padding: 18px 20px;
             border-radius: var(--radius-lg);
             background: rgba(255, 255, 255, 0.58);
-            border: 1px solid rgba(27, 35, 44, 0.07);
+            border: 1px solid rgba(24, 31, 38, 0.08);
         }
 
         .info-card strong {
@@ -166,25 +239,89 @@
             line-height: 1.6;
         }
 
-        .workspace {
-            display: grid;
-            gap: 18px;
-            align-content: start;
+        .right-side {
+            display: flex;
+            align-items: center;
         }
 
-        .panel {
+        .card {
             position: relative;
             z-index: 1;
-            padding: 28px;
-            border-radius: 28px;
+            width: 100%;
+            padding: 30px;
+            border-radius: 30px;
             background: var(--panel-strong);
-            border: 1px solid var(--border);
+            border: 1px solid var(--line);
         }
 
-        .panel p {
+        .card p {
             margin: 12px 0 0;
             color: var(--muted);
             line-height: 1.65;
+        }
+
+        .switcher {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+            margin-top: 24px;
+            padding: 8px;
+            border-radius: 999px;
+            background: rgba(24, 31, 38, 0.05);
+        }
+
+        .switcher button {
+            min-height: 52px;
+            border: none;
+            border-radius: 999px;
+            background: transparent;
+            color: var(--muted);
+            font-weight: 700;
+            cursor: pointer;
+            transition: background 0.2s ease, color 0.2s ease, transform 0.2s ease;
+        }
+
+        .switcher button.active {
+            background: linear-gradient(135deg, var(--accent), #ff9a74);
+            color: #fff;
+            box-shadow: 0 16px 26px rgba(221, 84, 41, 0.18);
+        }
+
+        .switcher button:hover,
+        .submit-button:hover,
+        .secondary-button:hover,
+        .button-link:hover {
+            transform: translateY(-1px);
+        }
+
+        .panel-wrap {
+            margin-top: 22px;
+            position: relative;
+        }
+
+        .auth-panel {
+            display: none;
+            opacity: 0;
+            transform: translateY(12px);
+        }
+
+        .auth-panel.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+            animation: panelReveal 0.28s ease;
+        }
+
+        @keyframes panelReveal {
+            from {
+                opacity: 0;
+                transform: translateY(12px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         .form-grid {
@@ -196,16 +333,16 @@
         .field {
             display: grid;
             gap: 8px;
+            color: var(--muted);
             font-size: 0.95rem;
             font-weight: 600;
-            color: var(--muted);
         }
 
         .field input {
             width: 100%;
             padding: 17px 18px;
             border-radius: var(--radius-md);
-            border: 1px solid rgba(27, 35, 44, 0.12);
+            border: 1px solid rgba(24, 31, 38, 0.12);
             background: #fff;
             color: var(--text);
             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
@@ -213,52 +350,38 @@
 
         .field input:focus {
             outline: none;
-            border-color: rgba(255, 106, 61, 0.45);
-            box-shadow: 0 0 0 5px rgba(255, 106, 61, 0.12);
+            border-color: rgba(255, 116, 71, 0.45);
+            box-shadow: 0 0 0 5px rgba(255, 116, 71, 0.12);
             transform: translateY(-1px);
         }
 
-        .button-row,
-        .actions {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            align-items: center;
-        }
-
-        .primary-button,
-        .ghost-button,
+        .submit-button,
+        .secondary-button,
         .button-link {
-            min-height: 52px;
-            padding: 12px 18px;
-            border-radius: 999px;
+            min-height: 54px;
+            padding: 14px 20px;
             border: none;
+            border-radius: 999px;
+            cursor: pointer;
             text-decoration: none;
             display: inline-flex;
             align-items: center;
             justify-content: center;
-            cursor: pointer;
             transition: transform 0.2s ease, box-shadow 0.2s ease;
         }
 
-        .primary-button {
+        .submit-button {
             background: linear-gradient(135deg, var(--accent), #ff9a74);
             color: #fff;
             font-weight: 700;
-            box-shadow: 0 18px 28px rgba(223, 79, 37, 0.18);
+            box-shadow: 0 18px 28px rgba(221, 84, 41, 0.18);
         }
 
-        .ghost-button,
+        .secondary-button,
         .button-link {
             background: #fff;
-            border: 1px solid rgba(27, 35, 44, 0.1);
+            border: 1px solid rgba(24, 31, 38, 0.1);
             color: var(--text);
-        }
-
-        .primary-button:hover,
-        .ghost-button:hover,
-        .button-link:hover {
-            transform: translateY(-1px);
         }
 
         .status {
@@ -276,32 +399,234 @@
             color: var(--danger);
         }
 
+        .note,
         .result-card,
         .analytics-result {
             margin-top: 18px;
-            padding: 20px;
+            padding: 18px 20px;
             border-radius: var(--radius-lg);
-            background: linear-gradient(180deg, rgba(255, 106, 61, 0.07), rgba(95, 143, 255, 0.05));
-            border: 1px solid rgba(255, 106, 61, 0.14);
+            background: linear-gradient(180deg, rgba(255, 116, 71, 0.07), rgba(110, 151, 255, 0.05));
+            border: 1px solid rgba(255, 116, 71, 0.12);
         }
 
-        .result-card[hidden],
-        .analytics-result[hidden] {
-            display: none;
-        }
-
+        .note strong,
         .section-label {
-            display: inline-block;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.9rem;
             color: var(--muted);
+            letter-spacing: 0.05em;
+            text-transform: uppercase;
+        }
+
+        .note span {
+            color: var(--muted);
+            line-height: 1.6;
+        }
+
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 0.98fr 1.02fr;
+            min-height: 760px;
+        }
+
+        .dashboard-side,
+        .dashboard-work {
+            padding: 42px;
+        }
+
+        .dashboard-side {
+            border-right: 1px solid rgba(24, 31, 38, 0.08);
+            display: flex;
+            flex-direction: column;
+            justify-content: flex-start;
+            gap: 28px;
+        }
+
+        .top-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 14px;
+        }
+
+        .welcome-box {
+            padding: 18px 20px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.58);
+            border: 1px solid rgba(24, 31, 38, 0.08);
+        }
+
+        .welcome-box span {
+            display: block;
+            color: var(--muted);
+            font-size: 0.88rem;
             text-transform: uppercase;
             letter-spacing: 0.05em;
-            font-size: 0.82rem;
             font-weight: 700;
+        }
+
+        .welcome-box strong {
+            display: block;
+            margin-top: 8px;
+            font-size: 1.2rem;
+        }
+
+        .dashboard-visual {
+            position: relative;
+            overflow: hidden;
+            min-height: 250px;
+            border-radius: 28px;
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 247, 242, 0.88)),
+                linear-gradient(135deg, rgba(255, 116, 71, 0.08), rgba(110, 151, 255, 0.08));
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        }
+
+        .dashboard-visual::before,
+        .dashboard-visual::after {
+            content: "";
+            position: absolute;
+            border-radius: 50%;
+            pointer-events: none;
+        }
+
+        .dashboard-visual::before {
+            width: 190px;
+            height: 190px;
+            top: -72px;
+            right: -54px;
+            background: radial-gradient(circle, rgba(255, 116, 71, 0.2), rgba(255, 116, 71, 0));
+        }
+
+        .dashboard-visual::after {
+            width: 160px;
+            height: 160px;
+            bottom: -64px;
+            left: -36px;
+            background: radial-gradient(circle, rgba(110, 151, 255, 0.16), rgba(110, 151, 255, 0));
+        }
+
+        .dashboard-visual svg {
+            position: relative;
+            z-index: 1;
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        .dashboard-work {
+            display: grid;
+            gap: 18px;
+            align-content: start;
+        }
+
+        .seo-section {
+            margin-top: 24px;
+            padding: 42px;
+        }
+
+        .seo-layout {
+            display: grid;
+            grid-template-columns: 1.08fr 0.92fr;
+            gap: 26px;
+            align-items: start;
+        }
+
+        .seo-section h2 {
+            font-size: clamp(2rem, 4vw, 3.2rem);
+            line-height: 1;
+        }
+
+        .seo-section p {
+            margin: 16px 0 0;
+            color: var(--muted);
+            line-height: 1.8;
+        }
+
+        .seo-card-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .seo-card {
+            padding: 22px;
+            border-radius: var(--radius-lg);
+            background: rgba(255, 255, 255, 0.68);
+            border: 1px solid rgba(24, 31, 38, 0.08);
+        }
+
+        .seo-card h3 {
+            font-size: 1.2rem;
+            letter-spacing: -0.03em;
+        }
+
+        .seo-card p {
+            margin-top: 10px;
+            font-size: 0.98rem;
+        }
+
+        .seo-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 26px;
+        }
+
+        .seo-links a {
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: rgba(24, 31, 38, 0.05);
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .seo-links a:hover {
+            background: rgba(255, 116, 71, 0.1);
+            border-color: rgba(255, 116, 71, 0.2);
+        }
+
+        .seo-note {
+            font-size: 0.98rem;
+        }
+
+        .dashboard-title {
+            max-width: 100%;
+            font-size: clamp(2.45rem, 4.9vw, 4.2rem);
+            line-height: 0.94;
+        }
+
+        .title-tail {
+            white-space: nowrap;
+        }
+
+        .dashboard-stats {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 14px;
+        }
+
+        .helper-text {
+            margin: -2px 0 0;
+            color: var(--muted);
+            font-size: 0.93rem;
+            line-height: 1.6;
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+            margin-top: 16px;
         }
 
         .result-link {
             display: inline-block;
-            margin-top: 10px;
+            margin-top: 8px;
             font-size: 1.04rem;
             font-weight: 700;
             color: var(--accent-deep);
@@ -310,6 +635,18 @@
 
         .result-link:hover {
             text-decoration: underline;
+        }
+
+        .result-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            align-items: center;
+        }
+
+        .result-prefix {
+            color: var(--text);
+            font-weight: 700;
         }
 
         .original-url {
@@ -330,7 +667,7 @@
             padding: 18px;
             border-radius: var(--radius-md);
             background: rgba(255, 255, 255, 0.74);
-            border: 1px solid rgba(27, 35, 44, 0.08);
+            border: 1px solid rgba(24, 31, 38, 0.08);
         }
 
         .stat-box span {
@@ -350,6 +687,11 @@
             word-break: break-word;
         }
 
+        .stat-box.link-stat strong {
+            font-size: 1.15rem;
+            line-height: 1.35;
+        }
+
         .timeline {
             margin: 18px 0 0;
             padding: 0;
@@ -362,7 +704,7 @@
             padding: 14px 16px;
             border-radius: var(--radius-md);
             background: rgba(255, 255, 255, 0.72);
-            border: 1px solid rgba(27, 35, 44, 0.08);
+            border: 1px solid rgba(24, 31, 38, 0.08);
             color: var(--text);
         }
 
@@ -371,18 +713,21 @@
             padding: 16px 18px;
             border-radius: var(--radius-md);
             background: rgba(255, 255, 255, 0.72);
-            border: 1px dashed rgba(27, 35, 44, 0.14);
+            border: 1px dashed rgba(24, 31, 38, 0.14);
             color: var(--muted);
         }
 
-        @media (max-width: 940px) {
-            .grid {
+        @media (max-width: 920px) {
+            .split-grid,
+            .dashboard-grid,
+            .seo-layout {
                 grid-template-columns: 1fr;
             }
 
-            .intro {
+            .intro,
+            .dashboard-side {
                 border-right: none;
-                border-bottom: 1px solid rgba(27, 35, 44, 0.08);
+                border-bottom: 1px solid rgba(24, 31, 38, 0.08);
             }
         }
 
@@ -392,26 +737,38 @@
             }
 
             .intro,
-            .workspace {
+            .right-side,
+            .dashboard-side,
+            .dashboard-work {
                 padding: 24px;
             }
 
-            .panel {
+            .card {
                 padding: 22px;
             }
 
-            .analytics-summary {
-                grid-template-columns: 1fr;
+            .dashboard-title {
+                font-size: clamp(2.15rem, 10vw, 3rem);
+                line-height: 0.96;
             }
 
-            .button-row,
-            .actions {
+            .switcher,
+            .analytics-summary,
+            .dashboard-stats,
+            .seo-card-grid,
+            .info-list {
+                grid-template-columns: 1fr;
+                border-radius: 24px;
+            }
+
+            .actions,
+            .top-row {
                 flex-direction: column;
                 align-items: stretch;
             }
 
-            .primary-button,
-            .ghost-button,
+            .submit-button,
+            .secondary-button,
             .button-link {
                 width: 100%;
             }
@@ -420,85 +777,261 @@
 </head>
 <body>
     <main class="page">
-        <section class="shell">
-            <div class="grid">
+        <section id="auth-view" class="view-shell">
+            <div class="split-grid">
                 <section class="intro">
                     <div>
-                        <span class="badge">Smart Links</span>
-                        <h1>Shorten it. Share it. Track it.</h1>
+                        <span class="pill">Account</span>
+                        <h1>Clean short links for every share.</h1>
                         <p class="intro-copy">
-                            Create a short URL in one step, then check click activity anytime with the same clean interface.
+                            Convert ugly long links into clean short links in 1 click.
+                            urlzap.me is a free URL shortener for students and developers who want to shorten long links fast,
+                            including assignment URLs, project links, Render deployments, and Vercel builds.
+                            It is also useful for WhatsApp and Telegram users who want cleaner messages, and event organizers sharing forms and registrations.
                         </p>
                     </div>
 
-                    <div class="info-cards">
+                    <div class="hero-visual" aria-hidden="true">
+                        <svg viewBox="0 0 520 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="cardGlow" x1="66" y1="32" x2="436" y2="272" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#FF7447" stop-opacity="0.22"/>
+                                    <stop offset="1" stop-color="#6E97FF" stop-opacity="0.12"/>
+                                </linearGradient>
+                                <linearGradient id="accentStroke" x1="124" y1="108" x2="380" y2="232" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#FF7447"/>
+                                    <stop offset="1" stop-color="#6E97FF"/>
+                                </linearGradient>
+                            </defs>
+
+                            <rect x="52" y="38" width="416" height="224" rx="28" fill="url(#cardGlow)"/>
+                            <rect x="88" y="74" width="170" height="152" rx="22" fill="white" fill-opacity="0.92" stroke="#F1D8CF"/>
+                            <rect x="276" y="96" width="156" height="46" rx="16" fill="white" fill-opacity="0.92" stroke="#E4E7EC"/>
+                            <rect x="276" y="154" width="156" height="18" rx="9" fill="#FFF2EE"/>
+                            <rect x="276" y="184" width="126" height="18" rx="9" fill="#F6F8FF"/>
+                            <rect x="276" y="214" width="96" height="14" rx="7" fill="#FFE3D9"/>
+
+                            <rect x="108" y="94" width="130" height="18" rx="9" fill="#FFF1EB"/>
+                            <rect x="108" y="126" width="100" height="14" rx="7" fill="#F5F7FF"/>
+                            <rect x="108" y="152" width="76" height="14" rx="7" fill="#FFE7DE"/>
+                            <rect x="108" y="182" width="112" height="24" rx="12" fill="#FF7447"/>
+
+                            <path d="M258 150H278" stroke="url(#accentStroke)" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M242 134L258 150L242 166" stroke="url(#accentStroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="392" cy="74" r="18" fill="#FFF6F1"/>
+                            <path d="M392 66C386.477 66 382 70.4772 382 76V82H402V76C402 70.4772 397.523 66 392 66ZM386 82V76C386 72.6863 388.686 70 392 70C395.314 70 398 72.6863 398 76V82" fill="#FF7447"/>
+                        </svg>
+                    </div>
+
+                    <div class="info-list">
                         <div class="info-card">
-                            <strong>Create short links fast</strong>
-                            <span>Drop any long URL into the form and get a short one back instantly.</span>
+                            <strong>Students</strong>
+                            <span>Share assignment links, project submissions, and reference material in a cleaner format.</span>
                         </div>
                         <div class="info-card">
-                            <strong>Check analytics anytime</strong>
-                            <span>Paste a short id or short URL to see total clicks and visit history.</span>
+                            <strong>Developers</strong>
+                            <span>Turn long Render, Vercel, and deployment URLs into links that are easier to send and remember.</span>
+                        </div>
+                        <div class="info-card">
+                            <strong>WhatsApp and Telegram</strong>
+                            <span>Make messages look cleaner by replacing bulky URLs with short, readable links.</span>
+                        </div>
+                        <div class="info-card">
+                            <strong>Event organizers</strong>
+                            <span>Share registration forms, schedules, and event pages with links that are quick to copy and easy to open.</span>
                         </div>
                     </div>
                 </section>
 
-                <section class="workspace">
-                    <article class="panel">
+                <section class="right-side">
+                    <article class="card">
+                        <h2>Account access</h2>
+                        <p>Select an option below.</p>
+
+                        <div class="switcher" role="tablist" aria-label="Authentication forms">
+                            <button id="signup-tab" class="active" type="button" role="tab" aria-selected="true">Create Account</button>
+                            <button id="login-tab" type="button" role="tab" aria-selected="false">Sign In</button>
+                        </div>
+
+                        <div class="panel-wrap">
+                            <section id="signup-panel" class="auth-panel active" role="tabpanel" aria-labelledby="signup-tab">
+                                <h3>Create account</h3>
+                                <p>Complete the required fields.</p>
+
+                                <form id="signup-form" class="form-grid" novalidate>
+                                    <label class="field" for="signup-name">
+                                        Name
+                                        <input id="signup-name" name="name" type="text" placeholder="Enter your full name" required>
+                                    </label>
+
+                                    <label class="field" for="signup-email">
+                                        Email
+                                        <input id="signup-email" name="email" type="email" placeholder="you@example.com" required>
+                                    </label>
+
+                                    <label class="field" for="signup-userid">
+                                        User ID
+                                        <input id="signup-userid" name="user_id" type="text" placeholder="choose-a-user-id" required>
+                                    </label>
+
+                                    <label class="field" for="signup-password">
+                                        Password
+                                        <input id="signup-password" name="password" type="password" placeholder="Create a password" required>
+                                    </label>
+
+                                    <button type="submit" class="submit-button">Create Account</button>
+                                </form>
+
+                                <p id="signup-status" class="status" role="status" aria-live="polite"></p>
+                            </section>
+
+                            <section id="login-panel" class="auth-panel" role="tabpanel" aria-labelledby="login-tab">
+                                <h3>Sign in</h3>
+                                <p>Use your registered credentials.</p>
+
+                                <form id="login-form" class="form-grid" novalidate>
+                                    <label class="field" for="login-identifier">
+                                        Email or User ID
+                                        <input id="login-identifier" name="identifier" type="text" placeholder="Enter email or user id" required>
+                                    </label>
+
+                                    <label class="field" for="login-password">
+                                        Password
+                                        <input id="login-password" name="password" type="password" placeholder="Enter your password" required>
+                                    </label>
+
+                                    <button type="submit" class="submit-button">Sign In</button>
+                                </form>
+
+                                <p id="login-status" class="status" role="status" aria-live="polite"></p>
+                            </section>
+                        </div>
+                    </article>
+                </section>
+            </div>
+        </section>
+
+        <section id="dashboard-view" class="view-shell" hidden>
+            <div class="dashboard-grid">
+                <section class="dashboard-side">
+                    <div>
+                        <div class="top-row">
+                            <span class="pill">Dashboard</span>
+                            <button id="logout-button" type="button" class="secondary-button">Sign Out</button>
+                        </div>
+
+                        <h1 class="dashboard-title">Create, track &amp; manage your short links <span class="title-tail">in seconds &#9889;</span></h1>
+                        <p class="intro-copy">
+                            Shorten long URLs, keep sharing clean, and monitor performance from one simple workspace.
+                        </p>
+                    </div>
+
+                    <div class="dashboard-visual" aria-hidden="true">
+                        <svg viewBox="0 0 520 300" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="projectGlow" x1="68" y1="38" x2="440" y2="268" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#FF7447" stop-opacity="0.2"/>
+                                    <stop offset="1" stop-color="#6E97FF" stop-opacity="0.12"/>
+                                </linearGradient>
+                                <linearGradient id="chartStroke" x1="94" y1="178" x2="406" y2="134" gradientUnits="userSpaceOnUse">
+                                    <stop stop-color="#FF7447"/>
+                                    <stop offset="1" stop-color="#6E97FF"/>
+                                </linearGradient>
+                            </defs>
+
+                            <rect x="56" y="40" width="408" height="220" rx="28" fill="url(#projectGlow)"/>
+
+                            <rect x="86" y="74" width="162" height="70" rx="20" fill="white" fill-opacity="0.94" stroke="#F0D8CF"/>
+                            <rect x="104" y="92" width="88" height="12" rx="6" fill="#FFE9E0"/>
+                            <rect x="104" y="114" width="120" height="14" rx="7" fill="#FFF5F0"/>
+                            <rect x="86" y="160" width="162" height="92" rx="20" fill="white" fill-opacity="0.9" stroke="#E8EBF1"/>
+                            <rect x="106" y="184" width="46" height="44" rx="16" fill="#FF7447"/>
+                            <rect x="162" y="170" width="46" height="58" rx="16" fill="#FFC5B4"/>
+                            <rect x="218" y="196" width="10" height="32" rx="5" fill="#EFD0C6"/>
+
+                            <rect x="274" y="74" width="160" height="88" rx="22" fill="white" fill-opacity="0.94" stroke="#E5E8EE"/>
+                            <rect x="294" y="94" width="102" height="14" rx="7" fill="#FFF1EC"/>
+                            <rect x="294" y="118" width="120" height="14" rx="7" fill="#F5F7FF"/>
+                            <rect x="294" y="142" width="76" height="12" rx="6" fill="#FFE1D7"/>
+
+                            <rect x="274" y="182" width="160" height="70" rx="22" fill="white" fill-opacity="0.92" stroke="#E4E8EF"/>
+                            <path d="M298 224L330 202L356 214L390 176L410 186" stroke="url(#chartStroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="330" cy="202" r="7" fill="#FF7447"/>
+                            <circle cx="356" cy="214" r="7" fill="#FFA07D"/>
+                            <circle cx="390" cy="176" r="7" fill="#6E97FF"/>
+
+                            <path d="M248 110H274" stroke="url(#chartStroke)" stroke-width="8" stroke-linecap="round"/>
+                            <path d="M234 96L248 110L234 124" stroke="url(#chartStroke)" stroke-width="8" stroke-linecap="round" stroke-linejoin="round"/>
+                            <circle cx="430" cy="74" r="18" fill="#FFF6F1"/>
+                            <path d="M430 67C424.477 67 420 71.4772 420 77V83H440V77C440 71.4772 435.523 67 430 67ZM424 83V77C424 73.6863 426.686 71 430 71C433.314 71 436 73.6863 436 77V83" fill="#FF7447"/>
+                        </svg>
+                    </div>
+
+                    <section class="dashboard-stats" aria-label="Dashboard stats">
+                        <article class="stat-box">
+                            <span>&#128279; Total Links Created</span>
+                            <strong id="total-links-stat">0</strong>
+                        </article>
+                        <article class="stat-box">
+                            <span>&#128065; Total Clicks</span>
+                            <strong id="total-clicks-stat">0</strong>
+                        </article>
+                        <article class="stat-box link-stat">
+                            <span>&#128202; Most Popular Link</span>
+                            <strong id="popular-link-stat">No data yet</strong>
+                        </article>
+                    </section>
+
+                    <div class="welcome-box">
+                        <span>Logged In As</span>
+                        <strong id="welcome-user">User</strong>
+                    </div>
+                </section>
+
+                <section class="dashboard-work">
+                    <article class="card">
                         <h2>Shorten your URL</h2>
-                        <p>Enter the full URL below and generate a short link.</p>
+                        <p>Generate a short link from a full URL.</p>
 
                         <form id="shorten-form" class="form-grid">
                             <label class="field" for="url-input">
                                 Long URL
-                                <input
-                                    id="url-input"
-                                    name="url"
-                                    type="url"
-                                    placeholder="https://example.com/your-long-link"
-                                    required
-                                >
+                                <input id="url-input" name="url" type="url" placeholder="https://example.com/your-long-link" required>
                             </label>
+                            <p class="helper-text">Paste your long URL and get a clean short link instantly. No login required.</p>
 
-                            <div class="button-row">
-                                <button type="submit" class="primary-button">Generate Short URL</button>
-                            </div>
+                            <button type="submit" class="submit-button">Generate Short URL</button>
                         </form>
 
                         <p id="shorten-status" class="status" role="status" aria-live="polite"></p>
 
                         <section id="shorten-result" class="result-card" hidden>
-                            <span class="section-label">Short URL</span>
-                            <a id="short-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
+                            <span class="section-label">Generated Link</span>
+                            <div class="result-row">
+                                <span class="result-prefix">Short URL:</span>
+                                <a id="short-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
+                            </div>
                             <p id="original-url" class="original-url"></p>
 
                             <div class="actions">
-                                <a id="open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Link</a>
-                                <button type="button" id="copy-link" class="ghost-button">Copy Link</button>
-                                <button type="button" id="use-for-analytics" class="ghost-button">Get Analytics</button>
+                                <button type="button" id="copy-link" class="secondary-button">Copy</button>
+                                <a id="open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open</a>
+                                <button type="button" id="use-for-analytics" class="secondary-button">Get Analytics</button>
                             </div>
                         </section>
                     </article>
 
-                    <article class="panel">
-                        <h2>Get analytics</h2>
-                        <p>Enter a short id like <code>abc12</code> or a short URL like <code>/url/abc12</code>.</p>
+                    <article class="card">
+                        <h2>Track your link performance in real-time &#128202;</h2>
+                        <p>View click count and visit history.</p>
 
                         <form id="analytics-form" class="form-grid">
                             <label class="field" for="analytics-input">
                                 Short ID or Short URL
-                                <input
-                                    id="analytics-input"
-                                    name="shortId"
-                                    type="text"
-                                    placeholder="abc12 or http://localhost:5001/url/abc12"
-                                    required
-                                >
+                                <input id="analytics-input" name="shortId" type="text" placeholder="abc12 or http://localhost:5001/url/abc12" required>
                             </label>
 
-                            <div class="button-row">
-                                <button type="submit" class="primary-button">Fetch Analytics</button>
-                            </div>
+                            <button type="submit" class="submit-button">Fetch Analytics</button>
                         </form>
 
                         <p id="analytics-status" class="status" role="status" aria-live="polite"></p>
@@ -517,7 +1050,9 @@
                                 </div>
                             </div>
 
-                            <div class="actions" style="margin-top: 16px;">
+                            <div class="actions">
+                                <a id="analytics-open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Short Link</a>
+                                <button type="button" id="analytics-copy-link" class="secondary-button">Copy Short Link</button>
                                 <a id="analytics-json" class="button-link" href="#" target="_blank" rel="noreferrer">Open Analytics JSON</a>
                             </div>
 
@@ -526,6 +1061,51 @@
                         </section>
                     </article>
                 </section>
+            </div>
+        </section>
+
+        <section class="view-shell seo-section">
+            <div class="seo-layout">
+                <div>
+                    <span class="pill">Why urlzap</span>
+                    <h2>Free URL Shortener for Students &amp; Developers</h2>
+                    <p>
+                        urlzap.me is a free URL shortener for students and developers who need to shorten long links instantly.
+                        Use it to shorten render links, assignment URLs, portfolio links, project demos, and form links before sharing them anywhere.
+                    </p>
+                    <p>
+                        Whether you are posting in WhatsApp, Telegram, email, or an event group, urlzap helps you shorten long links into clean short URLs
+                        that are easier to copy, easier to remember, and better for sharing.
+                    </p>
+                    <p class="seo-note">
+                        This url shortener for students also gives you analytics, so you can review clicks, understand activity, and manage short links from one simple dashboard.
+                    </p>
+
+                    <nav class="seo-links" aria-label="SEO pages">
+                        <a href="/about">About</a>
+                        <a href="/how-it-works">How It Works</a>
+                        <a href="/features">Features</a>
+                    </nav>
+                </div>
+
+                <div class="seo-card-grid">
+                    <article class="seo-card">
+                        <h3>For assignments and projects</h3>
+                        <p>Share classroom work, portfolio links, and project submissions with shorter URLs that look cleaner and feel more professional.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>For Render and Vercel links</h3>
+                        <p>Long deployment URLs can be messy. Use urlzap to shorten render links and keep product demos easier to send.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>For messaging apps</h3>
+                        <p>Clean links are easier to send in WhatsApp and Telegram, especially when you want the message itself to stay readable.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>For event sharing</h3>
+                        <p>Turn long Google Forms and registration pages into compact links that are easier to place on posters, bios, and event messages.</p>
+                    </article>
+                </div>
             </div>
         </section>
     </main>

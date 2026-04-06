@@ -9,6 +9,7 @@ const port = process.env.PORT || 5001;
 
 const urlRoute = require("./routes/url.js");
 const connectdb = require("./connection.js");
+const useroute=require('./routes/user.js');
 
 connectdb(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
@@ -28,6 +29,7 @@ async function renderHome(req, res) {
 
 app.get("/", renderHome);
 app.use("/url", urlRoute);
+app.use("/user",useroute);
 
 app.listen(port, () => {
   console.log(`server start at port ${port}\n`);
