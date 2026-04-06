@@ -24,6 +24,10 @@ async function redirecturl(req, res) {
       },
     },
   );
+  if (!entry) {
+    return res.status(404).send("Short URL not found for redirecting");
+  }
+
   res.redirect(entry.redirectURL);
 }
 async function getanalytics(req, res) {
@@ -34,7 +38,7 @@ async function getanalytics(req, res) {
   
   if (!result) {
     return res.status(404).json({
-      error: "Short URL not found",
+      error: "Short URL not found for geting analytics",
     });
   }
 
@@ -44,4 +48,22 @@ async function getanalytics(req, res) {
   });
 }
 
-module.exports = { generateNewshortUrl, redirecturl, getanalytics };
+async function databaseclear(req,res){
+  try{
+    const result=await URL.deleteMany({});
+    return res.json({
+      success:true,
+      message: "Database cleared successfully",
+      deletedCount: result.deletedCount
+    });
+  }
+    catch(error){
+      return res.status(500).json({
+      success: false,
+      message: "Error clearing database",
+      error: error.message
+    });
+  }
+}
+
+module.exports = { generateNewshortUrl, redirecturl, getanalytics , databaseclear};

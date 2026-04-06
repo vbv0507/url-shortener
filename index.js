@@ -27,7 +27,6 @@ async function renderHome(req, res) {
 }
 
 app.get("/", renderHome);
-app.get("/test", renderHome);
 app.use("/url", urlRoute);
 
 app.listen(port, () => {
