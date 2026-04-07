@@ -184,6 +184,29 @@ p {
     border: 1px solid var(--line);
 }
 
+.illustration {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--radius-lg);
+    border: 1px solid rgba(24, 31, 38, 0.08);
+    background:
+        linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 246, 241, 0.82)),
+        linear-gradient(135deg, rgba(255, 116, 71, 0.08), rgba(110, 151, 255, 0.08));
+    padding: 16px;
+    margin-top: 22px;
+}
+
+.illustration svg {
+    display: block;
+    width: 100%;
+    height: auto;
+}
+
+.cta-card {
+    display: grid;
+    gap: 16px;
+}
+
 .list,
 .mini-grid {
     display: grid;
