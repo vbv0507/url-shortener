@@ -154,11 +154,11 @@ function getShortId(value) {
 }
 
 function getShortUrl(shortId) {
-  return `${window.location.origin}/url/${shortId}`;
+  return `${window.location.origin}/${shortId}`;
 }
 
 function getShortDisplayUrl(shortId) {
-  return `${window.location.host}/url/${shortId}`;
+  return `${window.location.host}/${shortId}`;
 }
 
 function getMostPopularShortId() {
@@ -232,7 +232,7 @@ function renderAnalytics(shortId, data) {
   analyticsPath.textContent = getShortDisplayUrl(shortId);
   analyticsClicks.textContent = String(data.totalClicks || 0);
   analyticsOpenLink.href = shortUrl;
-  analyticsJson.href = `/url/analytics/${shortId}`;
+  analyticsJson.href = `/analytics/${shortId}`;
   analyticsHistory.innerHTML = "";
 
   if (history.length === 0) {
@@ -253,7 +253,7 @@ function renderAnalytics(shortId, data) {
 async function loadAnalytics(shortId) {
   setStatus(analyticsStatus, "Loading analytics...", "");
 
-  const response = await fetch(`/url/analytics/${shortId}`);
+  const response = await fetch(`/analytics/${shortId}`);
   const data = await readJson(response);
 
   if (!response.ok) {
@@ -376,7 +376,7 @@ shortenForm.addEventListener("submit", async (event) => {
   setStatus(shortenStatus, "Creating short URL...", "");
 
   try {
-    const response = await fetch("/url", {
+    const response = await fetch("/", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
@@ -391,7 +391,7 @@ shortenForm.addEventListener("submit", async (event) => {
     }
 
     latestShortId = data.id;
-    const createdUrl = `${window.location.origin}/url/${data.id}`;
+    const createdUrl = `${window.location.origin}/${data.id}`;
 
     shortLink.href = createdUrl;
     shortLink.textContent = createdUrl;
@@ -446,7 +446,7 @@ useForAnalytics.addEventListener("click", async () => {
     return;
   }
 
-  analyticsInput.value = `${window.location.origin}/url/${latestShortId}`;
+  analyticsInput.value = `${window.location.origin}/${latestShortId}`;
 
   try {
     await loadAnalytics(latestShortId);

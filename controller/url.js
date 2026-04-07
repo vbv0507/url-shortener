@@ -1,15 +1,39 @@
 const { nanoid } = require("nanoid");
 const URL = require("../model/url");
 async function generateNewshortUrl(req, res) {
-  const shortid = nanoid(5);
-  const body = req.body;
-  if (!body.url) return res.status(400).json({ error: "url is required" });
-  await URL.create({
-    shortId: shortid,
-    redirectURL: body.url,
-    visitHistory: [],
-  });
-  return res.status(200).json({ id: shortid });
+  try {
+    const body = req.body || {};
+    const rawUrl = body.url || req.query.url;
+    const url = typeof rawUrl === "string" ? rawUrl.trim() : "";
+
+    if (!url) {
+      return res.status(400).json({ error: "url is required" });
+    }
+
+    let shortid = nanoid(5);
+    try {
+      await URL.create({
+        shortId: shortid,
+        redirectURL: url,
+        visitHistory: [],
+      });
+      return res.status(200).json({ id: shortid });
+    } catch (createError) {
+      if (createError && createError.code === 11000) {
+        shortid = nanoid(6);
+        await URL.create({
+          shortId: shortid,
+          redirectURL: url,
+          visitHistory: [],
+        });
+        return res.status(200).json({ id: shortid });
+      }
+      throw createError;
+    }
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({ error: "Unable to create short URL" });
+  }
 }
 
 async function redirecturl(req, res) {

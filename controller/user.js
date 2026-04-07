@@ -5,7 +5,11 @@ async function signup(req, res) {
     try {
         console.log("BODY:", req.body);
 
-        const { name, email, password, user_id } = req.body;
+        const { name, email, password, user_id } = req.body || {};
+
+        if (!name || !email || !password || !user_id) {
+            return res.status(400).json({ message: "Missing required signup fields" });
+        }
 
         await User.create({
             name,
@@ -27,7 +31,11 @@ async function login(req, res) {
     try {
         console.log("BODY:", req.body);
 
-        const { email, password, user_id } = req.body;
+        const { email, password, user_id } = req.body || {};
+
+        if ((!email && !user_id) || !password) {
+            return res.status(400).json({ message: "Missing login credentials" });
+        }
 
         const user = await User.findOne({
             $or: [{ email }, { user_id }]
