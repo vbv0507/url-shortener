@@ -28,8 +28,8 @@ async function renderHome(req, res) {
 }
 
 app.get("/", renderHome);
-app.use("/url", urlRoute);
 app.use("/user",useroute);
+app.use("/", urlRoute);
 
 app.listen(port, () => {
   console.log(`server start at port ${port}\n`);
