@@ -1,6 +1,6 @@
 const User=require('../model/user')
-
-
+const {v4:uuidv4}=require('uuid')
+const { setUser }=require('../services/auth.js')
 async function signup(req, res) {
     try {
         console.log("BODY:", req.body);
@@ -50,7 +50,10 @@ async function login(req, res) {
             return res.status(401).json({ message: "Wrong password" });
         }
 
-        return res.json({ message: "Login successful" }).redirect('/home');
+        const sessionid=uuidv4();
+        setUser(sessionid,user);
+
+        return res.json({ message: "Login successful" }).redirect('/home').cookie('uid',sessionid);;
 
     } catch (err) {
         console.error(err);
