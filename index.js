@@ -34,8 +34,7 @@ async function renderHome(req, res) {
 app.get("/", renderHome);
 app.get("/home", restrictToLoggedinUserOnly, renderHome);
 app.use("/user",useroute);
-app.use("/",restrictToLoggedinUserOnly
-  , urlRoute);
+app.use("/api/url", urlRoute);
 
 app.listen(port, () => {
   console.log(`server start at port ${port}\n`);
