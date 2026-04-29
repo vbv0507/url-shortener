@@ -1,11 +1,15 @@
 const sessionIdToUser=new Map();
-
-function setUser(id,user){
-    sessionIdToUser.set(id,user);
+const jwt=require('jsonwebtoken');
+const secret='vaibhav'
+function setUser(user){
+    return jwt.sign({
+        _id:user._id,
+        email:user.email,
+    },secret);
 }
 
-function getUser(id){
-    return sessionIdToUser.get(id);
+function getUser(token){
+    return jwt.verify(token,secret)
 }
 
 module.exports={setUser,getUser}

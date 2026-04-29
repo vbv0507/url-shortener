@@ -1,6 +1,12 @@
 const User=require('../model/user')
 const {v4:uuidv4}=require('uuid')
 const { setUser }=require('../services/auth.js')
+const authCookieOptions = {
+    httpOnly: true,
+    sameSite: 'lax',
+    path: '/',
+};
+
 async function signup(req, res) {
     try {
         console.log("BODY:", req.body);
@@ -50,14 +56,21 @@ async function login(req, res) {
             return res.status(401).json({ message: "Wrong password" });
         }
 
-        const sessionid=uuidv4();
-        setUser(sessionid,user);
+        const token=setUser(user);
 
-        return res.json({ message: "Login successful" }).redirect('/home').cookie('uid',sessionid);;
+       res.cookie("uid", token, authCookieOptions);
+
+       return res.redirect("/home");
 
     } catch (err) {
         console.error(err);
         return res.status(500).send(err.message);
     }
 }
-module.exports={signup,login}
+
+async function logout(req, res) {
+    res.clearCookie("uid", authCookieOptions);
+    return res.redirect("/");
+}
+
+module.exports={signup,login,logout}

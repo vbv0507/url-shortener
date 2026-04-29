@@ -458,9 +458,7 @@ useForAnalytics.addEventListener("click", async () => {
 logoutButton.addEventListener("click", () => {
   sessionStorage.removeItem("portal_view");
   sessionStorage.removeItem("portal_user");
-  activatePanel("login");
-  showView("auth");
-  loginIdentifier.focus();
+  window.location.href = "/user/logout";
 });
 
 if (sessionStorage.getItem("portal_view") === "dashboard") {
