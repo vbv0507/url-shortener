@@ -3,15 +3,15 @@ require("dotenv").config();
 const express = require("express");
 const path = require("path");
 const URL = require("./model/url.js");
-const cookieParser=require('cookie-parser');
-const {restrictToLoggedinUserOnly}=require('./middleware/auth.middleware.js')
+const cookieParser = require('cookie-parser');
+const { restrictToLoggedinUserOnly } = require('./middleware/auth.middleware.js');
 
 const app = express();
 const port = process.env.PORT || 5001;
 
 const urlRoute = require("./routes/url.js");
 const connectdb = require("./connection.js");
-const useroute=require('./routes/user.js');
+const useroute = require('./routes/user.js');
 
 connectdb(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
@@ -31,10 +31,12 @@ async function renderHome(req, res) {
   });
 }
 
+
+app.use("/api/url", urlRoute);
+app.use("/user", useroute);
+
 app.get("/", renderHome);
 app.get("/home", restrictToLoggedinUserOnly, renderHome);
-app.use("/user",useroute);
-app.use("/api/url", urlRoute);
 
 app.listen(port, () => {
   console.log(`server start at port ${port}\n`);
