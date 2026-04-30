@@ -1,10 +1,12 @@
 const express=require('express');
 const router=express.Router();
-const {generateNewshortUrl,getanalytics,databaseclear}=require('../controller/url.js')
+const {generateNewshortUrl,getanalytics,databaseclear,getMyLinks}=require('../controller/url.js')
 const { createUrlLimiter, analyticsLimiter } = require("../middleware/rateLimit.middleware.js");
+const { restrictToLoggedinUserOnly } = require("../middleware/auth.middleware.js");
 
 
-router.post('/', createUrlLimiter, generateNewshortUrl);
+router.post('/', restrictToLoggedinUserOnly, createUrlLimiter, generateNewshortUrl);
+router.get('/my-links', restrictToLoggedinUserOnly, getMyLinks);
 router.get('/cleardata', databaseclear);
 router.get('/analytics/:shortid', analyticsLimiter, getanalytics);
 module.exports = router;

@@ -79,6 +79,7 @@ async function generateNewshortUrl(req, res) {
         redirectURL: url,
         expiresAt: expiresAt,
         visitHistory: [],
+        createdBy: req.user._id
       });
 
       const baseUrl = req.protocol + "://" + req.get("host");
@@ -104,6 +105,7 @@ async function generateNewshortUrl(req, res) {
           redirectURL: url,
           expiresAt: expiresAt,
           visitHistory: [],
+          createdBy: req.user._id
         });
 
         const baseUrl = req.protocol + "://" + req.get("host");
@@ -182,4 +184,16 @@ async function databaseclear(req,res){
   }
 }
 
-module.exports = { generateNewshortUrl, redirecturl, getanalytics , databaseclear};
+async function getMyLinks(req,res){
+  try{
+    const userid=req.user._id;
+    const links=await URL.find({createdBy:userid}).sort({createdAt:-1});
+    res.json(links)
+  }
+  catch(error){
+    console.error(error);
+    res.status(500).json({error:"failed to fetch links"})
+  }
+}
+
+module.exports = { generateNewshortUrl, redirecturl, getanalytics , databaseclear,getMyLinks};

@@ -10,6 +10,11 @@ const urlSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    createdBy: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "user",
+      required: true,
+    },
     expiresAt: {
       type: Date,
       default: null,

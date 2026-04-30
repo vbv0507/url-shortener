@@ -54,13 +54,10 @@ const analyticsJson = document.getElementById("analytics-json");
 const analyticsHistory = document.getElementById("analytics-history");
 const analyticsEmpty = document.getElementById("analytics-empty");
 
-let createdLinks = readStoredList("portal_created_links");
-let linkClicks = readStoredMap("portal_link_clicks");
-let createdLinkRecords = readStoredList("portal_created_link_records");
-let latestShortId =
-  createdLinks[createdLinks.length - 1] ||
-  createdLinkRecords[createdLinkRecords.length - 1]?.shortId ||
-  "";
+let createdLinks = [];
+let linkClicks = {};
+let createdLinkRecords = [];
+let latestShortId = "";
 
 function setStatus(element, message, state) {
   element.textContent = message;
@@ -92,8 +89,10 @@ function showView(viewName) {
   if (showDashboard) {
     const savedUser = sessionStorage.getItem("portal_user") || "User";
     welcomeUser.textContent = savedUser;
-    renderDashboardStats();
-    renderSavedLinks();
+    loadMyLinks().catch(() => {
+      renderDashboardStats();
+      renderSavedLinks();
+    });
   }
 }
 
@@ -114,28 +113,10 @@ async function readJson(response) {
   }
 }
 
-function readStoredList(key) {
-  try {
-    const parsed = JSON.parse(sessionStorage.getItem(key) || "[]");
-    return Array.isArray(parsed) ? parsed : [];
-  } catch (error) {
-    return [];
-  }
-}
-
-function readStoredMap(key) {
-  try {
-    const parsed = JSON.parse(sessionStorage.getItem(key) || "{}");
-    return parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed : {};
-  } catch (error) {
-    return {};
-  }
-}
-
-function saveDashboardState() {
-  sessionStorage.setItem("portal_created_links", JSON.stringify(createdLinks));
-  sessionStorage.setItem("portal_link_clicks", JSON.stringify(linkClicks));
-  sessionStorage.setItem("portal_created_link_records", JSON.stringify(createdLinkRecords));
+function clearLegacyDashboardStorage() {
+  sessionStorage.removeItem("portal_created_links");
+  sessionStorage.removeItem("portal_link_clicks");
+  sessionStorage.removeItem("portal_created_link_records");
 }
 
 function getExpiryText(expiresAt) {
@@ -262,6 +243,28 @@ function formatDateLabel(value) {
   });
 }
 
+function buildLinkRecordFromApi(link) {
+  return {
+    shortId: link.shortId,
+    shortUrl: getShortUrl(link.shortId),
+    originalUrl: link.redirectURL || "",
+    expiresAt: link.expiresAt || null,
+    createdAt: link.createdAt || new Date().toISOString(),
+    totalClicks: Array.isArray(link.visitHistory) ? link.visitHistory.length : 0,
+  };
+}
+
+function rebuildDashboardCaches() {
+  createdLinks = createdLinkRecords.map((record) => record.shortId);
+  linkClicks = {};
+
+  createdLinkRecords.forEach((record) => {
+    linkClicks[record.shortId] = Number(record.totalClicks) || 0;
+  });
+
+  latestShortId = createdLinks[createdLinks.length - 1] || "";
+}
+
 function getMostPopularShortId() {
   if (createdLinks.length === 0) {
     return "";
@@ -308,6 +311,7 @@ function upsertCreatedLinkRecord(record) {
     originalUrl: record.originalUrl || "",
     expiresAt: record.expiresAt || null,
     createdAt: record.createdAt || new Date().toISOString(),
+    totalClicks: Number(record.totalClicks) || 0,
   };
 
   const existingIndex = createdLinkRecords.findIndex((item) => item.shortId === nextRecord.shortId);
@@ -321,26 +325,6 @@ function upsertCreatedLinkRecord(record) {
   }
 
   createdLinkRecords.push(nextRecord);
-}
-
-function syncCreatedLinkRecords() {
-  let changed = false;
-
-  createdLinks.forEach((shortId) => {
-    const exists = createdLinkRecords.some((record) => record.shortId === shortId);
-
-    if (!exists) {
-      upsertCreatedLinkRecord({
-        shortId,
-        shortUrl: getShortUrl(shortId),
-      });
-      changed = true;
-    }
-  });
-
-  if (changed) {
-    saveDashboardState();
-  }
 }
 
 function rememberCreatedLink(shortId, details = {}) {
@@ -360,9 +344,10 @@ function rememberCreatedLink(shortId, details = {}) {
     originalUrl: details.originalUrl,
     expiresAt: details.expiresAt,
     createdAt: details.createdAt,
+    totalClicks: details.totalClicks,
   });
 
-  saveDashboardState();
+  rebuildDashboardCaches();
   renderDashboardStats();
   renderSavedLinks();
 }
@@ -376,9 +361,14 @@ function rememberAnalytics(shortId, totalClicks) {
     createdLinks.push(shortId);
   }
 
+  const record = createdLinkRecords.find((item) => item.shortId === shortId);
+  if (record) {
+    record.totalClicks = Number(totalClicks) || 0;
+  }
+
   linkClicks[shortId] = Number(totalClicks) || 0;
-  saveDashboardState();
   renderDashboardStats();
+  renderSavedLinks();
 }
 
 function createSavedLinkItem(record) {
@@ -453,7 +443,6 @@ function createSavedLinkItem(record) {
 }
 
 function renderSavedLinks() {
-  syncCreatedLinkRecords();
   const records = createdLinkRecords.slice().reverse();
 
   savedLinksList.innerHTML = "";
@@ -470,6 +459,22 @@ function renderSavedLinks() {
   records.forEach((record) => {
     savedLinksList.appendChild(createSavedLinkItem(record));
   });
+}
+
+async function loadMyLinks() {
+  const response = await fetch("/api/url/my-links");
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(data.error || "Unable to fetch your links right now.");
+  }
+
+  const records = Array.isArray(data) ? data.map(buildLinkRecordFromApi) : [];
+  createdLinkRecords = records;
+  rebuildDashboardCaches();
+  clearLegacyDashboardStorage();
+  renderDashboardStats();
+  renderSavedLinks();
 }
 
 function renderAnalytics(shortId, data) {
@@ -666,6 +671,7 @@ shortenForm.addEventListener("submit", async (event) => {
       originalUrl: longUrl,
       expiresAt: data.expiresAt,
       createdAt: new Date().toISOString(),
+      totalClicks: 0,
     });
     shortLink.href = createdUrl;
     shortLink.textContent = createdUrl;
@@ -676,6 +682,7 @@ shortenForm.addEventListener("submit", async (event) => {
     analyticsInput.value = createdUrl;
     shortenResult.hidden = false;
     setStatus(shortenStatus, "Short URL created.", "success");
+    loadMyLinks().catch(() => {});
   } catch (error) {
     setStatus(shortenStatus, error.message || "Unable to create short URL.", "error");
   } finally {
@@ -770,6 +777,11 @@ useForAnalytics.addEventListener("click", async () => {
 });
 
 logoutButton.addEventListener("click", () => {
+  createdLinks = [];
+  linkClicks = {};
+  createdLinkRecords = [];
+  latestShortId = "";
+  clearLegacyDashboardStorage();
   sessionStorage.removeItem("portal_view");
   sessionStorage.removeItem("portal_user");
   window.location.href = "/user/logout";
