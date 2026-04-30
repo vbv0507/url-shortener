@@ -39,6 +39,8 @@ const useForAnalytics = document.getElementById("use-for-analytics");
 const totalLinksStat = document.getElementById("total-links-stat");
 const totalClicksStat = document.getElementById("total-clicks-stat");
 const popularLinkStat = document.getElementById("popular-link-stat");
+const savedLinksEmpty = document.getElementById("saved-links-empty");
+const savedLinksList = document.getElementById("saved-links-list");
 
 const analyticsForm = document.getElementById("analytics-form");
 const analyticsInput = document.getElementById("analytics-input");
@@ -54,7 +56,11 @@ const analyticsEmpty = document.getElementById("analytics-empty");
 
 let createdLinks = readStoredList("portal_created_links");
 let linkClicks = readStoredMap("portal_link_clicks");
-let latestShortId = createdLinks[createdLinks.length - 1] || "";
+let createdLinkRecords = readStoredList("portal_created_link_records");
+let latestShortId =
+  createdLinks[createdLinks.length - 1] ||
+  createdLinkRecords[createdLinkRecords.length - 1]?.shortId ||
+  "";
 
 function setStatus(element, message, state) {
   element.textContent = message;
@@ -87,6 +93,7 @@ function showView(viewName) {
     const savedUser = sessionStorage.getItem("portal_user") || "User";
     welcomeUser.textContent = savedUser;
     renderDashboardStats();
+    renderSavedLinks();
   }
 }
 
@@ -128,6 +135,7 @@ function readStoredMap(key) {
 function saveDashboardState() {
   sessionStorage.setItem("portal_created_links", JSON.stringify(createdLinks));
   sessionStorage.setItem("portal_link_clicks", JSON.stringify(linkClicks));
+  sessionStorage.setItem("portal_created_link_records", JSON.stringify(createdLinkRecords));
 }
 
 function getExpiryText(expiresAt) {
@@ -235,6 +243,25 @@ function getShortDisplayUrl(shortId) {
   return `${window.location.host}/${shortId}`;
 }
 
+function formatDateLabel(value) {
+  if (!value) {
+    return "";
+  }
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  return date.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
+
 function getMostPopularShortId() {
   if (createdLinks.length === 0) {
     return "";
@@ -270,7 +297,53 @@ function renderDashboardStats() {
   }
 }
 
-function rememberCreatedLink(shortId) {
+function upsertCreatedLinkRecord(record) {
+  if (!record || !record.shortId) {
+    return;
+  }
+
+  const nextRecord = {
+    shortId: record.shortId,
+    shortUrl: record.shortUrl || getShortUrl(record.shortId),
+    originalUrl: record.originalUrl || "",
+    expiresAt: record.expiresAt || null,
+    createdAt: record.createdAt || new Date().toISOString(),
+  };
+
+  const existingIndex = createdLinkRecords.findIndex((item) => item.shortId === nextRecord.shortId);
+
+  if (existingIndex >= 0) {
+    createdLinkRecords[existingIndex] = {
+      ...createdLinkRecords[existingIndex],
+      ...nextRecord,
+    };
+    return;
+  }
+
+  createdLinkRecords.push(nextRecord);
+}
+
+function syncCreatedLinkRecords() {
+  let changed = false;
+
+  createdLinks.forEach((shortId) => {
+    const exists = createdLinkRecords.some((record) => record.shortId === shortId);
+
+    if (!exists) {
+      upsertCreatedLinkRecord({
+        shortId,
+        shortUrl: getShortUrl(shortId),
+      });
+      changed = true;
+    }
+  });
+
+  if (changed) {
+    saveDashboardState();
+  }
+}
+
+function rememberCreatedLink(shortId, details = {}) {
   if (!shortId) {
     return;
   }
@@ -281,8 +354,17 @@ function rememberCreatedLink(shortId) {
     createdLinks.push(shortId);
   }
 
+  upsertCreatedLinkRecord({
+    shortId,
+    shortUrl: details.shortUrl,
+    originalUrl: details.originalUrl,
+    expiresAt: details.expiresAt,
+    createdAt: details.createdAt,
+  });
+
   saveDashboardState();
   renderDashboardStats();
+  renderSavedLinks();
 }
 
 function rememberAnalytics(shortId, totalClicks) {
@@ -297,6 +379,97 @@ function rememberAnalytics(shortId, totalClicks) {
   linkClicks[shortId] = Number(totalClicks) || 0;
   saveDashboardState();
   renderDashboardStats();
+}
+
+function createSavedLinkItem(record) {
+  const item = document.createElement("article");
+  item.className = "saved-link-item";
+
+  const createdLabel = formatDateLabel(record.createdAt);
+  const expiryLabel = getExpiryText(record.expiresAt);
+
+  const top = document.createElement("div");
+  top.className = "saved-link-top";
+
+  const idBadge = document.createElement("span");
+  idBadge.className = "saved-link-id";
+  idBadge.textContent = `/${record.shortId}`;
+
+  const time = document.createElement("span");
+  time.className = "saved-link-time";
+  time.textContent = createdLabel ? `Created ${createdLabel}` : "Saved link";
+
+  top.append(idBadge, time);
+
+  const shortLinkNode = document.createElement("a");
+  shortLinkNode.className = "saved-link-short";
+  shortLinkNode.href = record.shortUrl;
+  shortLinkNode.target = "_blank";
+  shortLinkNode.rel = "noreferrer";
+  shortLinkNode.textContent = record.shortUrl;
+
+  const original = document.createElement("p");
+  original.className = "saved-link-original";
+  original.textContent = record.originalUrl
+    ? `Original: ${record.originalUrl}`
+    : "Original URL unavailable";
+
+  const meta = document.createElement("div");
+  meta.className = "saved-link-meta";
+
+  const expiryChip = document.createElement("span");
+  expiryChip.className = "meta-chip";
+  expiryChip.textContent = expiryLabel;
+  meta.appendChild(expiryChip);
+
+  const actions = document.createElement("div");
+  actions.className = "actions saved-link-actions";
+
+  const copyButton = document.createElement("button");
+  copyButton.type = "button";
+  copyButton.className = "secondary-button";
+  copyButton.dataset.linkAction = "copy";
+  copyButton.dataset.linkUrl = record.shortUrl;
+  copyButton.textContent = "Copy Link";
+
+  const openButton = document.createElement("a");
+  openButton.className = "button-link";
+  openButton.href = record.shortUrl;
+  openButton.target = "_blank";
+  openButton.rel = "noreferrer";
+  openButton.textContent = "Open";
+
+  const analyticsButton = document.createElement("button");
+  analyticsButton.type = "button";
+  analyticsButton.className = "secondary-button";
+  analyticsButton.dataset.linkAction = "analytics";
+  analyticsButton.dataset.shortId = record.shortId;
+  analyticsButton.textContent = "Analytics";
+
+  actions.append(copyButton, openButton, analyticsButton);
+  item.append(top, shortLinkNode, original, meta, actions);
+
+  return item;
+}
+
+function renderSavedLinks() {
+  syncCreatedLinkRecords();
+  const records = createdLinkRecords.slice().reverse();
+
+  savedLinksList.innerHTML = "";
+
+  if (records.length === 0) {
+    savedLinksEmpty.hidden = false;
+    savedLinksList.hidden = true;
+    return;
+  }
+
+  savedLinksEmpty.hidden = true;
+  savedLinksList.hidden = false;
+
+  records.forEach((record) => {
+    savedLinksList.appendChild(createSavedLinkItem(record));
+  });
 }
 
 function renderAnalytics(shortId, data) {
@@ -488,7 +661,12 @@ shortenForm.addEventListener("submit", async (event) => {
     latestShortId = data.id;
     const createdUrl = data.shortUrl || `${window.location.origin}/${data.id}`;
 
-    rememberCreatedLink(data.id);
+    rememberCreatedLink(data.id, {
+      shortUrl: createdUrl,
+      originalUrl: longUrl,
+      expiresAt: data.expiresAt,
+      createdAt: new Date().toISOString(),
+    });
     shortLink.href = createdUrl;
     shortLink.textContent = createdUrl;
     openLink.href = createdUrl;
@@ -509,6 +687,36 @@ expiryOptionButtons.forEach((button) => {
   button.addEventListener("click", () => {
     selectExpiryOption(button);
   });
+});
+
+savedLinksList.addEventListener("click", async (event) => {
+  const actionButton = event.target.closest("[data-link-action]");
+
+  if (!actionButton) {
+    return;
+  }
+
+  if (actionButton.dataset.linkAction === "copy") {
+    try {
+      await copyText(actionButton.dataset.linkUrl || "");
+      setStatus(shortenStatus, "Short URL copied.", "success");
+    } catch (error) {
+      setStatus(shortenStatus, "Unable to copy link automatically.", "error");
+    }
+    return;
+  }
+
+  if (actionButton.dataset.linkAction === "analytics") {
+    const shortId = actionButton.dataset.shortId || "";
+
+    analyticsInput.value = getShortUrl(shortId);
+
+    try {
+      await loadAnalytics(shortId);
+    } catch (error) {
+      setStatus(analyticsStatus, error.message || "Unable to load analytics.", "error");
+    }
+  }
 });
 
 analyticsForm.addEventListener("submit", async (event) => {
@@ -574,6 +782,7 @@ if (sessionStorage.getItem("portal_view") === "dashboard") {
   activatePanel("signup");
 }
 
+renderSavedLinks();
 syncPanelHeight();
 window.addEventListener("load", syncPanelHeight);
 window.addEventListener("resize", syncPanelHeight);

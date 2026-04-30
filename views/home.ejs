@@ -766,6 +766,17 @@
             margin-top: 16px;
         }
 
+        .card-header {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 16px;
+        }
+
+        .card-header p {
+            margin-top: 8px;
+        }
+
         .result-link {
             display: inline-block;
             margin-top: 8px;
@@ -859,6 +870,85 @@
             color: var(--muted);
         }
 
+        .saved-links-list {
+            display: grid;
+            gap: 12px;
+            margin-top: 18px;
+        }
+
+        .saved-link-item {
+            padding: 16px;
+            border-radius: 18px;
+            background: rgba(255, 255, 255, 0.74);
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.82);
+        }
+
+        .saved-link-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 12px;
+            flex-wrap: wrap;
+        }
+
+        .saved-link-id {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 116, 71, 0.12);
+            color: var(--accent-deep);
+            font-size: 0.86rem;
+            font-weight: 800;
+        }
+
+        .saved-link-time {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 600;
+        }
+
+        .saved-link-short {
+            display: inline-block;
+            margin-top: 12px;
+            color: var(--text);
+            font-size: 1rem;
+            font-weight: 800;
+            word-break: break-all;
+            text-decoration: none;
+        }
+
+        .saved-link-short:hover {
+            text-decoration: underline;
+        }
+
+        .saved-link-original {
+            margin: 10px 0 0;
+            color: var(--muted);
+            line-height: 1.55;
+            word-break: break-word;
+        }
+
+        .saved-link-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-top: 12px;
+        }
+
+        .saved-link-actions {
+            margin-top: 14px;
+        }
+
+        .saved-link-actions .secondary-button,
+        .saved-link-actions .button-link {
+            min-height: 44px;
+            padding: 10px 16px;
+            font-size: 0.92rem;
+        }
+
         @media (max-width: 920px) {
             .split-grid,
             .dashboard-grid,
@@ -905,6 +995,8 @@
             }
 
             .actions,
+            .saved-link-top,
+            .card-header,
             .result-meta,
             .expiry-head,
             .top-row {
@@ -1212,6 +1304,18 @@
                     </article>
 
                     <article class="card">
+                        <div class="card-header">
+                            <div>
+                                <h2>Your Recent Links</h2>
+                                <p>Keep your latest short URLs ready to open, copy, and share after refresh.</p>
+                            </div>
+                        </div>
+
+                        <div id="saved-links-empty" class="empty-history">Your created links will appear here after you generate them.</div>
+                        <section id="saved-links-list" class="saved-links-list" hidden></section>
+                    </article>
+
+                    <article class="card">
                         <h2>Track your link performance in real-time &#128202;</h2>
                         <p>View click count and visit history.</p>
 
@@ -1250,6 +1354,7 @@
                             <ul id="analytics-history" class="timeline"></ul>
                         </section>
                     </article>
+
                 </section>
             </div>
         </section>
