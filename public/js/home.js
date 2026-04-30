@@ -96,6 +96,16 @@ function showView(viewName) {
   }
 }
 
+function resetDashboardState() {
+  createdLinks = [];
+  linkClicks = {};
+  createdLinkRecords = [];
+  latestShortId = "";
+  clearLegacyDashboardStorage();
+  renderDashboardStats();
+  renderSavedLinks();
+}
+
 function isRedirectTarget(response, routeName) {
   try {
     const url = new URL(response.url);
@@ -111,6 +121,10 @@ async function readJson(response) {
   } catch (error) {
     return {};
   }
+}
+
+function isAuthError(response, data) {
+  return response.status === 401 || data.error === "Authentication required";
 }
 
 function clearLegacyDashboardStorage() {
@@ -462,10 +476,19 @@ function renderSavedLinks() {
 }
 
 async function loadMyLinks() {
-  const response = await fetch("/api/url/my-links");
+  const response = await fetch("/api/url/my-links", {
+    credentials: "same-origin",
+  });
   const data = await readJson(response);
 
   if (!response.ok) {
+    if (isAuthError(response, data)) {
+      resetDashboardState();
+      sessionStorage.removeItem("portal_view");
+      showView("auth");
+      activatePanel("login");
+      setStatus(loginStatus, "Please sign in to view your saved links.", "error");
+    }
     throw new Error(data.error || "Unable to fetch your links right now.");
   }
 
@@ -505,7 +528,9 @@ function renderAnalytics(shortId, data) {
 async function loadAnalytics(shortId) {
   setStatus(analyticsStatus, "Loading analytics...", "");
 
-  const response = await fetch(`/api/url/analytics/${shortId}`);
+  const response = await fetch(`/api/url/analytics/${shortId}`, {
+    credentials: "same-origin",
+  });
   const data = await readJson(response);
 
   if (!response.ok) {
@@ -546,6 +571,7 @@ signupForm.addEventListener("submit", async (event) => {
 
     const response = await fetch("/user", {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json"
       },
@@ -587,6 +613,7 @@ loginForm.addEventListener("submit", async (event) => {
 
     const response = await fetch("/user/login", {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json"
       },
@@ -610,7 +637,7 @@ loginForm.addEventListener("submit", async (event) => {
     sessionStorage.setItem("portal_view", "dashboard");
     sessionStorage.setItem("portal_user", identifier);
     setStatus(loginStatus, "Signed in successfully.", "success");
-    window.location.href = "/";
+    window.location.href = "/home";
   } catch (error) {
     setStatus(loginStatus, error.message || "Unable to sign in.", "error");
   }
@@ -651,6 +678,7 @@ shortenForm.addEventListener("submit", async (event) => {
 
     const response = await fetch("/api/url", {
       method: "POST",
+      credentials: "same-origin",
       headers: {
         "Content-Type": "application/json"
       },
@@ -777,11 +805,7 @@ useForAnalytics.addEventListener("click", async () => {
 });
 
 logoutButton.addEventListener("click", () => {
-  createdLinks = [];
-  linkClicks = {};
-  createdLinkRecords = [];
-  latestShortId = "";
-  clearLegacyDashboardStorage();
+  resetDashboardState();
   sessionStorage.removeItem("portal_view");
   sessionStorage.removeItem("portal_user");
   window.location.href = "/user/logout";

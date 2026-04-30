@@ -1,12 +1,19 @@
 const {getUser}=require('../services/auth.js');
 
+function sendUnauthenticated(req, res) {
+    if (req.originalUrl.startsWith("/api/")) {
+        return res.status(401).json({ error: "Authentication required" });
+    }
+
+    return res.redirect("/");
+}
 
 async function restrictToLoggedinUserOnly(req,res,next){
     const userUid=req.cookies?.uid;
-    if(!userUid)return res.redirect("/");
+    if(!userUid)return sendUnauthenticated(req, res);
     try {
         const user=getUser(userUid);
-        if(!user)return res.redirect("/");
+        if(!user)return sendUnauthenticated(req, res);
         req.user=user;
         next();
     } catch (error) {
@@ -15,7 +22,7 @@ async function restrictToLoggedinUserOnly(req,res,next){
             sameSite: "lax",
             path: "/",
         });
-        return res.redirect("/");
+        return sendUnauthenticated(req, res);
     }
 }
 
