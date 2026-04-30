@@ -7,6 +7,8 @@ const cookieParser = require("cookie-parser");
 const { restrictToLoggedinUserOnly } = require("./middleware/auth.middleware.js");
 
 const app = express();
+app.set("trust proxy", 1);
+
 const port = process.env.PORT || 5001;
 
 const urlRoute = require("./routes/url.js");

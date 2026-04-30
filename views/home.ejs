@@ -332,12 +332,24 @@
             margin-top: 22px;
         }
 
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            align-items: start;
+        }
+
         .field {
             display: grid;
             gap: 8px;
+            align-content: start;
             color: var(--muted);
             font-size: 0.95rem;
             font-weight: 600;
+        }
+
+        .field-label {
+            color: var(--text);
         }
 
         .field input {
@@ -350,11 +362,106 @@
             transition: border-color 0.2s ease, box-shadow 0.2s ease, transform 0.2s ease;
         }
 
+        .field input::placeholder {
+            color: rgba(102, 114, 125, 0.7);
+        }
+
         .field input:focus {
             outline: none;
             border-color: rgba(255, 116, 71, 0.45);
             box-shadow: 0 0 0 5px rgba(255, 116, 71, 0.12);
             transform: translateY(-1px);
+        }
+
+        .field input:invalid:not(:placeholder-shown) {
+            border-color: rgba(196, 72, 50, 0.45);
+            box-shadow: 0 0 0 5px rgba(196, 72, 50, 0.08);
+        }
+
+        .field-hint {
+            color: var(--muted);
+            font-size: 0.82rem;
+            font-weight: 500;
+            line-height: 1.5;
+        }
+
+        .expiry-panel {
+            position: relative;
+            overflow: hidden;
+            min-height: 100%;
+            padding: 16px;
+            border-radius: var(--radius-md);
+            background:
+                linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 247, 242, 0.82)),
+                linear-gradient(135deg, rgba(255, 116, 71, 0.08), rgba(110, 151, 255, 0.07));
+            border: 1px solid rgba(24, 31, 38, 0.1);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.78);
+        }
+
+        .expiry-head {
+            display: flex;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 12px;
+            margin-bottom: 14px;
+        }
+
+        .expiry-summary {
+            padding: 6px 10px;
+            border-radius: 999px;
+            background: rgba(24, 31, 38, 0.06);
+            color: var(--muted);
+            font-size: 0.8rem;
+            font-weight: 800;
+            line-height: 1.3;
+            white-space: nowrap;
+        }
+
+        .expiry-options {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 10px;
+        }
+
+        .expiry-option {
+            min-height: 68px;
+            padding: 12px;
+            border-radius: 16px;
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            background: rgba(255, 255, 255, 0.74);
+            color: var(--text);
+            cursor: pointer;
+            text-align: left;
+            transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+        }
+
+        .expiry-option strong,
+        .expiry-option span {
+            display: block;
+        }
+
+        .expiry-option strong {
+            font-size: 0.95rem;
+            line-height: 1.2;
+        }
+
+        .expiry-option span {
+            margin-top: 6px;
+            color: var(--muted);
+            font-size: 0.78rem;
+            line-height: 1.35;
+        }
+
+        .expiry-option:hover {
+            transform: translateY(-1px);
+            border-color: rgba(255, 116, 71, 0.28);
+            box-shadow: 0 12px 24px rgba(74, 44, 23, 0.08);
+        }
+
+        .expiry-option.active {
+            border-color: rgba(255, 116, 71, 0.42);
+            background: linear-gradient(135deg, rgba(255, 116, 71, 0.13), rgba(255, 255, 255, 0.92));
+            box-shadow: 0 14px 28px rgba(221, 84, 41, 0.12);
         }
 
         .submit-button,
@@ -377,6 +484,13 @@
             color: #fff;
             font-weight: 700;
             box-shadow: 0 18px 28px rgba(221, 84, 41, 0.18);
+        }
+
+        .submit-button:disabled {
+            cursor: wait;
+            opacity: 0.72;
+            transform: none;
+            box-shadow: none;
         }
 
         .secondary-button,
@@ -411,6 +525,12 @@
             border: 1px solid rgba(255, 116, 71, 0.12);
         }
 
+        .result-card {
+            display: grid;
+            gap: 14px;
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
+        }
+
         .note strong,
         .section-label {
             display: block;
@@ -419,6 +539,26 @@
             color: var(--muted);
             letter-spacing: 0.05em;
             text-transform: uppercase;
+        }
+
+        .result-meta {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+        }
+
+        .meta-chip {
+            display: inline-flex;
+            align-items: center;
+            min-height: 34px;
+            padding: 8px 12px;
+            border-radius: 999px;
+            background: rgba(255, 255, 255, 0.78);
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            color: var(--muted);
+            font-size: 0.88rem;
+            font-weight: 700;
+            line-height: 1.3;
         }
 
         .note span {
@@ -755,6 +895,7 @@
             }
 
             .switcher,
+            .form-row,
             .analytics-summary,
             .dashboard-stats,
             .seo-card-grid,
@@ -764,9 +905,15 @@
             }
 
             .actions,
+            .result-meta,
+            .expiry-head,
             .top-row {
                 flex-direction: column;
                 align-items: stretch;
+            }
+
+            .expiry-options {
+                grid-template-columns: 1fr;
             }
 
             .submit-button,
@@ -997,10 +1144,47 @@
 
                         <form id="shorten-form" class="form-grid">
                             <label class="field" for="url-input">
-                                Long URL
+                                <span class="field-label">Long URL</span>
                                 <input id="url-input" name="url" type="url" placeholder="https://example.com/your-long-link" required>
                             </label>
-                            <p class="helper-text">Paste your long URL and get a clean short link instantly. No login required.</p>
+
+                            <div class="form-row">
+                                <label class="field" for="alias-input">
+                                    <span class="field-label">Custom Alias</span>
+                                    <input id="alias-input" name="alias" type="text" placeholder="my-link" minlength="3" maxlength="30" pattern="[a-z0-9-]{3,30}">
+                                    <span class="field-hint">Optional. Use lowercase letters, numbers, and hyphens.</span>
+                                </label>
+
+                                <section class="expiry-panel" aria-labelledby="expiry-label">
+                                    <input id="expiry-input" name="expiresAt" type="hidden">
+                                    <div class="expiry-head">
+                                        <div>
+                                            <span id="expiry-label" class="field-label">Expiry</span>
+                                            <span class="field-hint">Choose how long this link should stay active.</span>
+                                        </div>
+                                        <span id="expiry-summary" class="expiry-summary">Permanent</span>
+                                    </div>
+                                    <div class="expiry-options" role="radiogroup" aria-label="Link expiry">
+                                        <button type="button" class="expiry-option active" data-expiry-option="never" aria-pressed="true">
+                                            <strong>No expiry</strong>
+                                            <span>Permanent link</span>
+                                        </button>
+                                        <button type="button" class="expiry-option" data-expiry-option="1d" aria-pressed="false">
+                                            <strong>24 hours</strong>
+                                            <span>Short campaign</span>
+                                        </button>
+                                        <button type="button" class="expiry-option" data-expiry-option="7d" aria-pressed="false">
+                                            <strong>7 days</strong>
+                                            <span>Weekly share</span>
+                                        </button>
+                                        <button type="button" class="expiry-option" data-expiry-option="30d" aria-pressed="false">
+                                            <strong>30 days</strong>
+                                            <span>Monthly link</span>
+                                        </button>
+                                    </div>
+                                </section>
+                            </div>
+                            <p class="helper-text">Choose a readable alias when you want a memorable link, or leave the extras blank for a quick random short URL.</p>
 
                             <button type="submit" class="submit-button">Generate Short URL</button>
                         </form>
@@ -1014,6 +1198,10 @@
                                 <a id="short-link" class="result-link" href="#" target="_blank" rel="noreferrer"></a>
                             </div>
                             <p id="original-url" class="original-url"></p>
+                            <div class="result-meta">
+                                <span id="short-id-output" class="meta-chip"></span>
+                                <span id="expiry-output" class="meta-chip"></span>
+                            </div>
 
                             <div class="actions">
                                 <button type="button" id="copy-link" class="secondary-button">Copy</button>

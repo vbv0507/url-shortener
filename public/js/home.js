@@ -23,10 +23,16 @@ const loginStatus = document.getElementById("login-status");
 
 const shortenForm = document.getElementById("shorten-form");
 const urlInput = document.getElementById("url-input");
+const aliasInput = document.getElementById("alias-input");
+const expiryInput = document.getElementById("expiry-input");
+const expirySummary = document.getElementById("expiry-summary");
+const expiryOptionButtons = document.querySelectorAll("[data-expiry-option]");
 const shortenStatus = document.getElementById("shorten-status");
 const shortenResult = document.getElementById("shorten-result");
 const shortLink = document.getElementById("short-link");
 const originalUrl = document.getElementById("original-url");
+const shortIdOutput = document.getElementById("short-id-output");
+const expiryOutput = document.getElementById("expiry-output");
 const openLink = document.getElementById("open-link");
 const copyLink = document.getElementById("copy-link");
 const useForAnalytics = document.getElementById("use-for-analytics");
@@ -122,6 +128,74 @@ function readStoredMap(key) {
 function saveDashboardState() {
   sessionStorage.setItem("portal_created_links", JSON.stringify(createdLinks));
   sessionStorage.setItem("portal_link_clicks", JSON.stringify(linkClicks));
+}
+
+function getExpiryText(expiresAt) {
+  if (!expiresAt) {
+    return "No expiry";
+  }
+
+  const expiryDate = new Date(expiresAt);
+
+  if (Number.isNaN(expiryDate.getTime())) {
+    return "";
+  }
+
+  return `Expires ${expiryDate.toLocaleString()}`;
+}
+
+function normalizeAlias(value) {
+  return value.toLowerCase().trim().replace(/\s+/g, "-");
+}
+
+function getPresetExpiry(option) {
+  if (option === "never") {
+    return null;
+  }
+
+  const expiryDate = new Date();
+
+  if (option === "1d") {
+    expiryDate.setDate(expiryDate.getDate() + 1);
+  }
+
+  if (option === "7d") {
+    expiryDate.setDate(expiryDate.getDate() + 7);
+  }
+
+  if (option === "30d") {
+    expiryDate.setDate(expiryDate.getDate() + 30);
+  }
+
+  return expiryDate;
+}
+
+function selectExpiryOption(selectedButton) {
+  expiryOptionButtons.forEach((button) => {
+    const isActive = button === selectedButton;
+    button.classList.toggle("active", isActive);
+    button.setAttribute("aria-pressed", String(isActive));
+  });
+
+  const expiryDate = getPresetExpiry(selectedButton.dataset.expiryOption);
+
+  if (!expiryDate) {
+    expiryInput.value = "";
+    expirySummary.textContent = "Permanent";
+    return;
+  }
+
+  expiryInput.value = expiryDate.toISOString();
+  expirySummary.textContent = expiryDate.toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
+
+function setShortenBusy(isBusy) {
+  const submitButton = shortenForm.querySelector(".submit-button");
+  submitButton.disabled = isBusy;
+  submitButton.textContent = isBusy ? "Generating..." : "Generate Short URL";
 }
 
 function syncPanelHeight() {
@@ -232,7 +306,7 @@ function renderAnalytics(shortId, data) {
   analyticsPath.textContent = getShortDisplayUrl(shortId);
   analyticsClicks.textContent = String(data.totalClicks || 0);
   analyticsOpenLink.href = shortUrl;
-  analyticsJson.href = `/analytics/${shortId}`;
+  analyticsJson.href = `/api/url/analytics/${shortId}`;
   analyticsHistory.innerHTML = "";
 
   if (history.length === 0) {
@@ -253,7 +327,7 @@ function renderAnalytics(shortId, data) {
 async function loadAnalytics(shortId) {
   setStatus(analyticsStatus, "Loading analytics...", "");
 
-  const response = await fetch(`/analytics/${shortId}`);
+  const response = await fetch(`/api/url/analytics/${shortId}`);
   const data = await readJson(response);
 
   if (!response.ok) {
@@ -364,6 +438,14 @@ loginForm.addEventListener("submit", async (event) => {
   }
 });
 
+aliasInput.addEventListener("input", () => {
+  const normalizedAlias = normalizeAlias(aliasInput.value);
+
+  if (aliasInput.value !== normalizedAlias) {
+    aliasInput.value = normalizedAlias;
+  }
+});
+
 shortenForm.addEventListener("submit", async (event) => {
   event.preventDefault();
 
@@ -373,15 +455,28 @@ shortenForm.addEventListener("submit", async (event) => {
   }
 
   const longUrl = urlInput.value.trim();
+  const alias = normalizeAlias(aliasInput.value);
+  const expiryValue = expiryInput.value;
   setStatus(shortenStatus, "Creating short URL...", "");
+  setShortenBusy(true);
 
   try {
-    const response = await fetch("/", {
+    const payload = { url: longUrl };
+
+    if (alias) {
+      payload.alias = alias;
+    }
+
+    if (expiryValue) {
+      payload.expiresAt = expiryValue;
+    }
+
+    const response = await fetch("/api/url", {
       method: "POST",
       headers: {
         "Content-Type": "application/json"
       },
-      body: JSON.stringify({ url: longUrl })
+      body: JSON.stringify(payload)
     });
 
     const data = await readJson(response);
@@ -391,18 +486,29 @@ shortenForm.addEventListener("submit", async (event) => {
     }
 
     latestShortId = data.id;
-    const createdUrl = `${window.location.origin}/${data.id}`;
+    const createdUrl = data.shortUrl || `${window.location.origin}/${data.id}`;
 
+    rememberCreatedLink(data.id);
     shortLink.href = createdUrl;
     shortLink.textContent = createdUrl;
     openLink.href = createdUrl;
-    originalUrl.textContent = `Original: ${longUrl}`;
+    originalUrl.textContent = `Destination: ${longUrl}`;
+    shortIdOutput.textContent = `Short ID: ${data.id}`;
+    expiryOutput.textContent = getExpiryText(data.expiresAt);
     analyticsInput.value = createdUrl;
     shortenResult.hidden = false;
     setStatus(shortenStatus, "Short URL created.", "success");
   } catch (error) {
     setStatus(shortenStatus, error.message || "Unable to create short URL.", "error");
+  } finally {
+    setShortenBusy(false);
   }
+});
+
+expiryOptionButtons.forEach((button) => {
+  button.addEventListener("click", () => {
+    selectExpiryOption(button);
+  });
 });
 
 analyticsForm.addEventListener("submit", async (event) => {

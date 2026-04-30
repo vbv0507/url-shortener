@@ -1,10 +1,12 @@
 const express=require('express');
 const router=express.Router();
-const {generateNewshortUrl,redirecturl,getanalytics,databaseclear}=require('../controller/url.js')
+const {generateNewshortUrl,getanalytics,databaseclear}=require('../controller/url.js')
+const { createUrlLimiter, analyticsLimiter } = require("../middleware/rateLimit.middleware.js");
 
-router.post('/',generateNewshortUrl);
-router.get('/cleardata',databaseclear);
-router.get('/analytics/:shortid',getanalytics);
-router.get('/:shortId',redirecturl);
-module.exports=router;
+
+router.post('/', createUrlLimiter, generateNewshortUrl);
+router.get('/cleardata', databaseclear);
+router.get('/analytics/:shortid', analyticsLimiter, getanalytics);
+module.exports = router;
+
 

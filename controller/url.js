@@ -1,5 +1,6 @@
 const { nanoid } = require("nanoid");
 const URL = require("../model/url");
+
 async function generateNewshortUrl(req, res) {
   try {
     const body = req.body || {};
@@ -10,24 +11,111 @@ async function generateNewshortUrl(req, res) {
       return res.status(400).json({ error: "url is required" });
     }
 
-    let shortid = nanoid(5);
+    const rawAlias = body.alias;
+    const alias =
+      typeof rawAlias === "string" ? rawAlias.trim().toLowerCase() : "";
+
+    const reservedAliases = [
+      "api",
+      "user",
+      "home",
+      "login",
+      "logout",
+      "analytics",
+      "cleardata",
+      "about",
+      "features",
+      "how-it-works",
+      "js",
+      "css",
+    ];
+
+    const aliasLengthOk = alias.length >= 3 && alias.length <= 30;
+
+    const aliasHasOnlyAllowedCharacters = alias.split("").every((char) => {
+      return (
+        (char >= "a" && char <= "z") ||
+        (char >= "0" && char <= "9") ||
+        char === "-"
+      );
+    });
+
+    if (alias && (!aliasLengthOk || !aliasHasOnlyAllowedCharacters)) {
+      return res.status(400).json({
+        error:
+          "Alias must be 3-30 characters and only use lowercase letters, numbers, and hyphens",
+      });
+    }
+
+    if (alias && reservedAliases.includes(alias)) {
+      return res.status(400).json({
+        error: "This alias is reserved. Please choose another one.",
+      });
+    }
+    const rawExpiresAt = body.expiresAt;
+    let expiresAt = null;
+
+    if (rawExpiresAt) {
+      expiresAt = new Date(rawExpiresAt);
+
+      if (Number.isNaN(expiresAt.getTime())) {
+        return res.status(400).json({
+          error: "Invalid expiry date",
+        });
+      }
+
+      if (expiresAt <= new Date()) {
+        return res.status(400).json({
+          error: "Expiry date must be in the future",
+        });
+      }
+    }
+
+    let shortid = alias || nanoid(5);
+
     try {
       await URL.create({
         shortId: shortid,
         redirectURL: url,
+        expiresAt: expiresAt,
         visitHistory: [],
       });
-      return res.status(200).json({ id: shortid });
+
+      const baseUrl = req.protocol + "://" + req.get("host");
+      const shortUrl = baseUrl + "/" + shortid;
+
+      return res.status(200).json({
+        id: shortid,
+        shortUrl: shortUrl,
+        expiresAt: expiresAt,
+      });
     } catch (createError) {
       if (createError && createError.code === 11000) {
+        if (alias) {
+          return res.status(409).json({
+            error: "This alias is already taken. Please choose another one.",
+          });
+        }
+
         shortid = nanoid(6);
+
         await URL.create({
           shortId: shortid,
           redirectURL: url,
+          expiresAt: expiresAt,
           visitHistory: [],
         });
-        return res.status(200).json({ id: shortid });
+
+        const baseUrl = req.protocol + "://" + req.get("host");
+        const shortUrl = baseUrl + "/" + shortid;
+
+        return res.status(200).json({
+          id: shortid,
+          shortUrl: shortUrl,
+          expiresAt: expiresAt,
+        });
       }
+
       throw createError;
     }
   } catch (error) {
@@ -38,22 +126,26 @@ async function generateNewshortUrl(req, res) {
 
 async function redirecturl(req, res) {
   const shortId = req.params.shortId;
-  const entry = await URL.findOneAndUpdate(
-    {
-      shortId,
-    },
-    {
-      $push: {
-        visitHistory: { timestamp: new Date().toLocaleString() },
-      },
-    },
-  );
+
+  const entry = await URL.findOne({ shortId });
+
   if (!entry) {
     return res.status(404).send("Short URL not found for redirecting");
   }
 
-  res.redirect(entry.redirectURL);
+  if (entry.expiresAt && entry.expiresAt <= new Date()) {
+    return res.status(410).send("This short URL has expired");
+  }
+
+  entry.visitHistory.push({
+    timestamp: new Date().toLocaleString(),
+  });
+
+  await entry.save();
+
+  return res.redirect(entry.redirectURL);
 }
+
 async function getanalytics(req, res) {
   const shortId = req.params.shortid;
 
