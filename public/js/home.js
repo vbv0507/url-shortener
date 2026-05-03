@@ -36,6 +36,10 @@ const expiryOutput = document.getElementById("expiry-output");
 const openLink = document.getElementById("open-link");
 const copyLink = document.getElementById("copy-link");
 const useForAnalytics = document.getElementById("use-for-analytics");
+const qrPreviewSection = document.getElementById("qr-preview-section");
+const qrImage = document.getElementById("qr-image");
+const openQr = document.getElementById("open-qr");
+const downloadQr = document.getElementById("download-qr");
 const totalLinksStat = document.getElementById("total-links-stat");
 const totalClicksStat = document.getElementById("total-clicks-stat");
 const popularLinkStat = document.getElementById("popular-link-stat");
@@ -58,6 +62,7 @@ let createdLinks = [];
 let linkClicks = {};
 let createdLinkRecords = [];
 let latestShortId = "";
+let qrObjectUrl = "";
 
 function setStatus(element, message, state) {
   element.textContent = message;
@@ -102,6 +107,7 @@ function resetDashboardState() {
   createdLinkRecords = [];
   latestShortId = "";
   clearLegacyDashboardStorage();
+  resetQrPreview();
   renderDashboardStats();
   renderSavedLinks();
 }
@@ -236,6 +242,52 @@ function getShortUrl(shortId) {
 
 function getShortDisplayUrl(shortId) {
   return `${window.location.host}/${shortId}`;
+}
+
+function getQrUrl(shortId) {
+  return `/api/url/qr/${shortId}`;
+}
+
+function revokeQrObjectUrl() {
+  if (!qrObjectUrl) {
+    return;
+  }
+
+  window.URL.revokeObjectURL(qrObjectUrl);
+  qrObjectUrl = "";
+}
+
+function resetQrPreview() {
+  revokeQrObjectUrl();
+  qrPreviewSection.hidden = true;
+  qrImage.removeAttribute("src");
+  qrImage.alt = "QR code preview";
+  openQr.removeAttribute("href");
+  downloadQr.removeAttribute("href");
+}
+
+async function showQrPreview(shortId) {
+  const qrUrl = getQrUrl(shortId);
+  const response = await fetch(qrUrl, {
+    credentials: "same-origin",
+  });
+
+  if (!response.ok) {
+    const data = await readJson(response);
+    resetQrPreview();
+    throw new Error(data.error || "Unable to load QR code right now.");
+  }
+
+  const qrBlob = await response.blob();
+  revokeQrObjectUrl();
+  qrObjectUrl = window.URL.createObjectURL(qrBlob);
+
+  qrImage.src = qrObjectUrl;
+  qrImage.alt = `QR code for ${getShortDisplayUrl(shortId)}`;
+  openQr.href = qrUrl;
+  downloadQr.href = qrObjectUrl;
+  downloadQr.download = `${shortId}-qr.svg`;
+  qrPreviewSection.hidden = false;
 }
 
 function formatDateLabel(value) {
@@ -450,7 +502,14 @@ function createSavedLinkItem(record) {
   analyticsButton.dataset.shortId = record.shortId;
   analyticsButton.textContent = "Analytics";
 
-  actions.append(copyButton, openButton, analyticsButton);
+  const qrButton = document.createElement("button");
+  qrButton.type = "button";
+  qrButton.className = "secondary-button";
+  qrButton.dataset.linkAction = "qr";
+  qrButton.dataset.shortId = record.shortId;
+  qrButton.textContent = "QR";
+
+  actions.append(copyButton, openButton, analyticsButton, qrButton);
   item.append(top, shortLinkNode, original, meta, actions);
 
   return item;
@@ -710,6 +769,11 @@ shortenForm.addEventListener("submit", async (event) => {
     analyticsInput.value = createdUrl;
     shortenResult.hidden = false;
     setStatus(shortenStatus, "Short URL created.", "success");
+    try {
+      await showQrPreview(data.id);
+    } catch (qrError) {
+      setStatus(shortenStatus, "Short URL created, but QR could not be loaded.", "error");
+    }
     loadMyLinks().catch(() => {});
   } catch (error) {
     setStatus(shortenStatus, error.message || "Unable to create short URL.", "error");
@@ -737,6 +801,18 @@ savedLinksList.addEventListener("click", async (event) => {
       setStatus(shortenStatus, "Short URL copied.", "success");
     } catch (error) {
       setStatus(shortenStatus, "Unable to copy link automatically.", "error");
+    }
+    return;
+  }
+
+  if (actionButton.dataset.linkAction === "qr") {
+    const shortId = actionButton.dataset.shortId || "";
+
+    try {
+      await showQrPreview(shortId);
+      setStatus(shortenStatus, "QR code loaded.", "success");
+    } catch (error) {
+      setStatus(shortenStatus, error.message || "Unable to load QR code.", "error");
     }
     return;
   }
@@ -818,7 +894,9 @@ if (sessionStorage.getItem("portal_view") === "dashboard") {
   activatePanel("signup");
 }
 
+resetQrPreview();
 renderSavedLinks();
 syncPanelHeight();
 window.addEventListener("load", syncPanelHeight);
 window.addEventListener("resize", syncPanelHeight);
+window.addEventListener("beforeunload", revokeQrObjectUrl);

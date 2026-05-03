@@ -1,5 +1,7 @@
 const { nanoid } = require("nanoid");
 const URL = require("../model/url");
+const QRCode = require("qrcode");
+
 
 async function generateNewshortUrl(req, res) {
   try {
@@ -126,6 +128,47 @@ async function generateNewshortUrl(req, res) {
   }
 }
 
+async function getQrCode(req, res) {
+  try {
+    const shortId = req.params.shortId;
+    const entry = await URL.findOne({ shortId });
+
+    if (!entry) {
+      return res.status(404).json({
+        error: "Short URL not found for QR generation",
+      });
+    }
+
+    if (entry.expiresAt && entry.expiresAt <= new Date()) {
+      return res.status(410).json({
+        error: "This short URL has expired",
+      });
+    }
+
+    const shortUrl = req.protocol + "://" + req.get("host") + "/" + shortId;
+
+    const qrSvg = await QRCode.toString(shortUrl, {
+      type: "svg",
+      width: 220,
+      margin: 1,
+      errorCorrectionLevel: "H",
+      color: {
+        dark: "#182028",
+        light: "#FFFaf5",
+      },
+    });
+
+    res.setHeader("Content-Type", "image/svg+xml");
+    return res.send(qrSvg);
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: "Unable to generate QR code",
+    });
+  }
+}
+
+
 async function redirecturl(req, res) {
   const shortId = req.params.shortId;
 
@@ -196,4 +239,4 @@ async function getMyLinks(req,res){
   }
 }
 
-module.exports = { generateNewshortUrl, redirecturl, getanalytics , databaseclear,getMyLinks};
+module.exports = { generateNewshortUrl, redirecturl, getanalytics , databaseclear,getMyLinks,getQrCode};
