@@ -446,6 +446,28 @@ function rememberAnalytics(shortId, totalClicks) {
   renderSavedLinks();
 }
 
+function findCreatedLinkRecord(shortId) {
+  return createdLinkRecords.find((record) => record.shortId === shortId) || null;
+}
+
+function populateGeneratedLinkCard(record) {
+  if (!record || !record.shortId) {
+    return;
+  }
+
+  latestShortId = record.shortId;
+  shortLink.href = record.shortUrl || getShortUrl(record.shortId);
+  shortLink.textContent = record.shortUrl || getShortUrl(record.shortId);
+  openLink.href = record.shortUrl || getShortUrl(record.shortId);
+  originalUrl.textContent = record.originalUrl
+    ? `Destination: ${record.originalUrl}`
+    : "Destination unavailable";
+  shortIdOutput.textContent = `Short ID: ${record.shortId}`;
+  expiryOutput.textContent = getExpiryText(record.expiresAt);
+  analyticsInput.value = record.shortUrl || getShortUrl(record.shortId);
+  shortenResult.hidden = false;
+}
+
 function createSavedLinkItem(record) {
   const item = document.createElement("article");
   item.className = "saved-link-item";
@@ -769,14 +791,12 @@ shortenForm.addEventListener("submit", async (event) => {
       createdAt: new Date().toISOString(),
       totalClicks: 0,
     });
-    shortLink.href = createdUrl;
-    shortLink.textContent = createdUrl;
-    openLink.href = createdUrl;
-    originalUrl.textContent = `Destination: ${longUrl}`;
-    shortIdOutput.textContent = `Short ID: ${data.id}`;
-    expiryOutput.textContent = getExpiryText(data.expiresAt);
-    analyticsInput.value = createdUrl;
-    shortenResult.hidden = false;
+    populateGeneratedLinkCard({
+      shortId: data.id,
+      shortUrl: createdUrl,
+      originalUrl: longUrl,
+      expiresAt: data.expiresAt,
+    });
     setStatus(shortenStatus, "Short URL created.", "success");
     try {
       await showQrPreview(data.id);
@@ -816,6 +836,11 @@ savedLinksList.addEventListener("click", async (event) => {
 
   if (actionButton.dataset.linkAction === "qr") {
     const shortId = actionButton.dataset.shortId || "";
+    const record = findCreatedLinkRecord(shortId);
+
+    if (record) {
+      populateGeneratedLinkCard(record);
+    }
 
     try {
       await showQrPreview(shortId);
