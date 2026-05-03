@@ -209,23 +209,6 @@ async function getanalytics(req, res) {
   });
 }
 
-async function databaseclear(req,res){
-  try{
-    const result=await URL.deleteMany({});
-    return res.json({
-      success:true,
-      message: "Database cleared successfully",
-      deletedCount: result.deletedCount
-    });
-  }
-    catch(error){
-      return res.status(500).json({
-      success: false,
-      message: "Error clearing database",
-      error: error.message
-    });
-  }
-}
 
 async function getMyLinks(req,res){
   try{
@@ -239,4 +222,4 @@ async function getMyLinks(req,res){
   }
 }
 
-module.exports = { generateNewshortUrl, redirecturl, getanalytics , databaseclear,getMyLinks,getQrCode};
+module.exports = { generateNewshortUrl, redirecturl, getanalytics , getMyLinks,getQrCode};
