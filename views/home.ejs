@@ -696,6 +696,15 @@
             align-content: start;
         }
 
+        .dashboard-side-tools {
+            display: grid;
+            gap: 18px;
+        }
+
+        .dashboard-side-tools .card {
+            padding: 24px;
+        }
+
         .seo-section {
             margin-top: 24px;
             padding: 42px;
@@ -1259,6 +1268,60 @@
                         <span>Logged In As</span>
                         <strong id="welcome-user">User</strong>
                     </div>
+
+                    <div class="dashboard-side-tools">
+                        <article class="card">
+                            <div class="card-header">
+                                <div>
+                                    <h2>Your Recent Links</h2>
+                                    <p>Keep your latest short URLs ready to open, copy, and share after refresh.</p>
+                                </div>
+                            </div>
+
+                            <div id="saved-links-empty" class="empty-history">Your created links will appear here after you generate them.</div>
+                            <section id="saved-links-list" class="saved-links-list" hidden></section>
+                        </article>
+
+                        <article class="card">
+                            <h2>Track your link performance in real-time &#128202;</h2>
+                            <p>View click count and visit history.</p>
+
+                            <form id="analytics-form" class="form-grid">
+                                <label class="field" for="analytics-input">
+                                    Short ID or Short URL
+                                    <input id="analytics-input" name="shortId" type="text" placeholder="abc12 or http://localhost:5001/abc12" required>
+                                </label>
+
+                                <button type="submit" class="submit-button">Fetch Analytics</button>
+                            </form>
+
+                            <p id="analytics-status" class="status" role="status" aria-live="polite"></p>
+
+                            <section id="analytics-result" class="analytics-result" hidden>
+                                <span class="section-label">Analytics Result</span>
+
+                                <div class="analytics-summary">
+                                    <div class="stat-box">
+                                        <span>Short Path</span>
+                                        <strong id="analytics-path">/url/</strong>
+                                    </div>
+                                    <div class="stat-box">
+                                        <span>Total Clicks</span>
+                                        <strong id="analytics-clicks">0</strong>
+                                    </div>
+                                </div>
+
+                                <div class="actions">
+                                    <a id="analytics-open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Short Link</a>
+                                    <button type="button" id="analytics-copy-link" class="secondary-button">Copy Short Link</button>
+                                    <a id="analytics-json" class="button-link" href="#" target="_blank" rel="noreferrer">Open Analytics JSON</a>
+                                </div>
+
+                                <div id="analytics-empty" class="empty-history" hidden>No visits recorded yet for this short URL.</div>
+                                <ul id="analytics-history" class="timeline"></ul>
+                            </section>
+                        </article>
+                    </div>
                 </section>
 
                 <section class="dashboard-work">
@@ -1343,58 +1406,6 @@
                                     <a id="download-qr" class="secondary-button" href="#" download="urlzap-qr.svg">Download QR</a>
                                 </div>
                             </section>
-                        </section>
-                    </article>
-
-                    <article class="card">
-                        <div class="card-header">
-                            <div>
-                                <h2>Your Recent Links</h2>
-                                <p>Keep your latest short URLs ready to open, copy, and share after refresh.</p>
-                            </div>
-                        </div>
-
-                        <div id="saved-links-empty" class="empty-history">Your created links will appear here after you generate them.</div>
-                        <section id="saved-links-list" class="saved-links-list" hidden></section>
-                    </article>
-
-                    <article class="card">
-                        <h2>Track your link performance in real-time &#128202;</h2>
-                        <p>View click count and visit history.</p>
-
-                        <form id="analytics-form" class="form-grid">
-                            <label class="field" for="analytics-input">
-                                Short ID or Short URL
-                                <input id="analytics-input" name="shortId" type="text" placeholder="abc12 or http://localhost:5001/abc12" required>
-                            </label>
-
-                            <button type="submit" class="submit-button">Fetch Analytics</button>
-                        </form>
-
-                        <p id="analytics-status" class="status" role="status" aria-live="polite"></p>
-
-                        <section id="analytics-result" class="analytics-result" hidden>
-                            <span class="section-label">Analytics Result</span>
-
-                            <div class="analytics-summary">
-                                <div class="stat-box">
-                                    <span>Short Path</span>
-                                    <strong id="analytics-path">/url/</strong>
-                                </div>
-                                <div class="stat-box">
-                                    <span>Total Clicks</span>
-                                    <strong id="analytics-clicks">0</strong>
-                                </div>
-                            </div>
-
-                            <div class="actions">
-                                <a id="analytics-open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Short Link</a>
-                                <button type="button" id="analytics-copy-link" class="secondary-button">Copy Short Link</button>
-                                <a id="analytics-json" class="button-link" href="#" target="_blank" rel="noreferrer">Open Analytics JSON</a>
-                            </div>
-
-                            <div id="analytics-empty" class="empty-history" hidden>No visits recorded yet for this short URL.</div>
-                            <ul id="analytics-history" class="timeline"></ul>
                         </section>
                     </article>
 
