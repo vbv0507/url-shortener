@@ -6,7 +6,7 @@ const authCookieOptions = {
     sameSite: 'lax',
     path: '/',
 };
-
+const bcrypt=require("bcrypt");
 async function signup(req, res) {
     try {
         console.log("BODY:", req.body);
@@ -16,11 +16,11 @@ async function signup(req, res) {
         if (!name || !email || !password || !user_id) {
             return res.status(400).json({ message: "Missing required signup fields" });
         }
-
+        const hashedPassword=await bcrypt.hash(password,10);
         await User.create({
             name,
             email,
-            password,
+            hashedPassword,
             user_id
         });
 
@@ -42,7 +42,7 @@ async function login(req, res) {
         if ((!email && !user_id) || !password) {
             return res.status(400).json({ message: "Missing login credentials" });
         }
-
+        
         const user = await User.findOne({
             $or: [{ email }, { user_id }]
         });
@@ -51,8 +51,8 @@ async function login(req, res) {
             return res.status(404).json({ message: "User not found" });
         }
 
-        
-        if (user.password !== password) {
+        const isMatch=await bcrypt.compare(password,user.password);
+        if (!isMatch) {
             return res.status(401).json({ message: "Wrong password" });
         }
 
