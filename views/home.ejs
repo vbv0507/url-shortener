@@ -3,30 +3,75 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Free URL Shortener for Students | urlzap.me</title>
-    <meta name="description" content="Shorten long URLs instantly. Perfect for students, developers, and WhatsApp sharing. Free URL shortener with analytics.">
-    <meta name="description" content="Free URL shortener for students and developers. Shorten long links instantly with analytics.">
-    <meta name="keywords" content="url shortener, free link shortener, shorten url, render link shortener, student tools">
+    <title>Free URL Shortener with QR Codes, Custom Aliases &amp; Analytics | urlzap</title>
+    <meta name="description" content="Shorten long URLs instantly with custom aliases, QR codes, expiry controls, and click analytics. urlzap is a free URL shortener for students, developers, and teams.">
     <meta name="author" content="Vaibhav Rai">
-    <meta name="robots" content="index, follow">
+    <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="google-site-verification" content="fbITtbyZqY1F3jCy83Olc0VlUawL_3SWwpoDCurLbKQ">
+    <meta name="theme-color" content="#ff7447">
     <link rel="canonical" href="https://urlzap.me/">
-    <meta property="og:title" content="Free URL Shortener for Students | urlzap.me">
-    <meta property="og:description" content="Shorten long URLs instantly. Perfect for students, developers, and WhatsApp sharing. Free URL shortener with analytics.">
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+    <meta property="og:site_name" content="urlzap">
+    <meta property="og:locale" content="en_IN">
+    <meta property="og:title" content="Free URL Shortener with QR Codes, Custom Aliases &amp; Analytics | urlzap">
+    <meta property="og:description" content="Create short links fast, add custom aliases, generate QR codes, set expiry dates, and track clicks from one dashboard.">
     <meta property="og:type" content="website">
     <meta property="og:url" content="https://urlzap.me/">
-    <meta name="twitter:card" content="summary">
+    <meta property="og:image" content="https://urlzap.me/og-image.svg">
+    <meta property="og:image:alt" content="urlzap URL shortener preview">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:title" content="Free URL Shortener with QR Codes, Custom Aliases &amp; Analytics | urlzap">
+    <meta name="twitter:description" content="Shorten links, share clean URLs, create QR codes, and track analytics with urlzap.">
+    <meta name="twitter:image" content="https://urlzap.me/og-image.svg">
     <script type="application/ld+json">
         {
             "@context": "https://schema.org",
-            "@type": "WebSite",
-            "name": "urlzap.me",
-            "url": "https://urlzap.me/",
-            "author": {
-                "@type": "Person",
-                "name": "Vaibhav Rai"
-            },
-            "description": "Free URL shortener for students and developers to shorten long links and track clicks."
+            "@graph": [
+                {
+                    "@type": "Organization",
+                    "@id": "https://urlzap.me/#organization",
+                    "name": "urlzap",
+                    "url": "https://urlzap.me/",
+                    "logo": "https://urlzap.me/favicon.svg",
+                    "founder": {
+                        "@type": "Person",
+                        "name": "Vaibhav Rai"
+                    }
+                },
+                {
+                    "@type": "WebSite",
+                    "@id": "https://urlzap.me/#website",
+                    "url": "https://urlzap.me/",
+                    "name": "urlzap",
+                    "description": "Free URL shortener with custom aliases, QR codes, expiry controls, and analytics.",
+                    "publisher": {
+                        "@id": "https://urlzap.me/#organization"
+                    }
+                },
+                {
+                    "@type": "SoftwareApplication",
+                    "name": "urlzap",
+                    "applicationCategory": "UtilitiesApplication",
+                    "operatingSystem": "Web",
+                    "url": "https://urlzap.me/",
+                    "isAccessibleForFree": true,
+                    "offers": {
+                        "@type": "Offer",
+                        "price": "0",
+                        "priceCurrency": "USD"
+                    },
+                    "featureList": [
+                        "URL shortening",
+                        "Custom aliases",
+                        "Expiry controls",
+                        "QR code generation",
+                        "Click analytics"
+                    ],
+                    "publisher": {
+                        "@id": "https://urlzap.me/#organization"
+                    }
+                }
+            ]
         }
     </script>
     <style>
@@ -80,6 +125,53 @@
         .page {
             width: min(1160px, 100%);
             margin: 0 auto;
+        }
+
+        .public-topbar {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            margin-bottom: 22px;
+        }
+
+        .brand {
+            display: inline-flex;
+            align-items: center;
+            gap: 10px;
+            text-decoration: none;
+            font-weight: 800;
+            letter-spacing: 0.02em;
+        }
+
+        .brand-mark {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent), #ff9a74);
+            box-shadow: 0 0 0 8px rgba(255, 116, 71, 0.12);
+        }
+
+        .public-nav {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .public-nav a {
+            padding: 12px 16px;
+            border-radius: 999px;
+            border: 1px solid rgba(24, 31, 38, 0.1);
+            background: rgba(255, 255, 255, 0.72);
+            color: var(--text);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .public-nav a:hover {
+            border-color: rgba(255, 116, 71, 0.25);
+            background: rgba(255, 116, 71, 0.08);
         }
 
         .view-shell {
@@ -803,6 +895,45 @@
             border-color: rgba(255, 116, 71, 0.2);
         }
 
+        .section-divider {
+            margin-top: 34px;
+            padding-top: 34px;
+            border-top: 1px solid rgba(24, 31, 38, 0.08);
+        }
+
+        .faq-grid {
+            display: grid;
+            grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 24px;
+        }
+
+        .seo-footer {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: flex-start;
+            justify-content: space-between;
+            gap: 18px;
+            margin-top: 34px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(24, 31, 38, 0.08);
+        }
+
+        .seo-footer-links {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+        }
+
+        .seo-footer-links a {
+            padding: 12px 16px;
+            border-radius: 999px;
+            background: rgba(24, 31, 38, 0.05);
+            border: 1px solid rgba(24, 31, 38, 0.08);
+            text-decoration: none;
+            font-weight: 700;
+        }
+
         .seo-note {
             font-size: 0.98rem;
         }
@@ -1061,6 +1192,7 @@
             .analytics-summary,
             .dashboard-stats,
             .seo-card-grid,
+            .faq-grid,
             .info-list {
                 grid-template-columns: 1fr;
                 border-radius: 24px;
@@ -1094,13 +1226,20 @@
             <div class="split-grid">
                 <section class="intro">
                     <div>
-                        <span class="pill">Account</span>
-                        <h1>Clean short links for every share.</h1>
+                        <div class="public-topbar">
+                            <a class="brand" href="/"><span class="brand-mark" aria-hidden="true"></span><span>urlzap</span></a>
+                            <nav class="public-nav" aria-label="Primary">
+                                <a href="/about/">About</a>
+                                <a href="/how-it-works/">How It Works</a>
+                                <a href="/features/">Features</a>
+                            </nav>
+                        </div>
+                        <span class="pill">Free URL Shortener</span>
+                        <h1>Shorten links, share faster, track what works.</h1>
                         <p class="intro-copy">
-                            Convert ugly long links into clean short links in 1 click.
-                            urlzap.me is a free URL shortener for students and developers who want to shorten long links fast,
-                            including assignment URLs, project links, Render deployments, and Vercel builds.
-                            It is also useful for WhatsApp and Telegram users who want cleaner messages, and event organizers sharing forms and registrations.
+                            Convert bulky long URLs into clean short links in one step.
+                            urlzap is a free URL shortener for students, developers, creators, and teams who want custom aliases,
+                            QR codes, expiry controls, and analytics without a complicated workflow.
                         </p>
                     </div>
 
@@ -1143,15 +1282,15 @@
                         </div>
                         <div class="info-card">
                             <strong>Developers</strong>
-                            <span>Turn long Render, Vercel, and deployment URLs into links that are easier to send and remember.</span>
+                            <span>Turn long Render, Vercel, and deployment URLs into short links that are easier to send, scan, and remember.</span>
                         </div>
                         <div class="info-card">
-                            <strong>WhatsApp and Telegram</strong>
-                            <span>Make messages look cleaner by replacing bulky URLs with short, readable links.</span>
+                            <strong>QR-ready sharing</strong>
+                            <span>Generate QR codes for short links so people can scan and open them instantly from posters, slides, and screens.</span>
                         </div>
                         <div class="info-card">
                             <strong>Event organizers</strong>
-                            <span>Share registration forms, schedules, and event pages with links that are quick to copy and easy to open.</span>
+                            <span>Share registration forms, schedules, and event pages with branded short links, expiry settings, and click tracking.</span>
                         </div>
                     </div>
                 </section>
@@ -1233,7 +1372,7 @@
                             <button id="logout-button" type="button" class="secondary-button">Sign Out</button>
                         </div>
 
-                        <h1 class="dashboard-title">Create, track &amp; manage your short links <span class="title-tail">in seconds &#9889;</span></h1>
+                        <h2 class="dashboard-title">Create, track &amp; manage your short links <span class="title-tail">in seconds &#9889;</span></h2>
                         <p class="intro-copy">
                             Shorten long URLs, keep sharing clean, and monitor performance from one simple workspace.
                         </p>
@@ -1462,49 +1601,124 @@
             </div>
         </section>
 
-        <section class="view-shell seo-section">
+        <section class="view-shell seo-section" aria-labelledby="why-urlzap-heading">
             <div class="seo-layout">
                 <div>
                     <span class="pill">Why urlzap</span>
-                    <h2>Free URL Shortener for Students &amp; Developers</h2>
+                    <h2 id="why-urlzap-heading">A free URL shortener with QR codes, custom aliases &amp; analytics</h2>
                     <p>
-                        urlzap.me is a free URL shortener for students and developers who need to shorten long links instantly.
-                        Use it to shorten render links, assignment URLs, portfolio links, project demos, and form links before sharing them anywhere.
+                        urlzap is built for people who want more than a basic short link. You can shorten long URLs, choose a custom alias,
+                        generate a QR code, set link expiry, and check click analytics from the same dashboard.
                     </p>
                     <p>
-                        Whether you are posting in WhatsApp, Telegram, email, or an event group, urlzap helps you shorten long links into clean short URLs
-                        that are easier to copy, easier to remember, and better for sharing.
+                        Whether you are sharing assignment links, project demos, portfolio pages, Google Forms, event registrations, or deployment URLs,
+                        urlzap helps you create clean short URLs that look better and are easier to copy, remember, and monitor.
                     </p>
                     <p class="seo-note">
-                        This url shortener for students also gives you analytics, so you can review clicks, understand activity, and manage short links from one simple dashboard.
+                        Looking for a url shortener for students, developers, or fast-moving teams? urlzap is designed for practical sharing, not just shorter text.
                     </p>
 
                     <nav class="seo-links" aria-label="SEO pages">
-                        <a href="/about">About</a>
-                        <a href="/how-it-works">How It Works</a>
-                        <a href="/features">Features</a>
+                        <a href="/about/">About</a>
+                        <a href="/how-it-works/">How It Works</a>
+                        <a href="/features/">Features</a>
                     </nav>
                 </div>
 
                 <div class="seo-card-grid">
                     <article class="seo-card">
-                        <h3>For assignments and projects</h3>
-                        <p>Share classroom work, portfolio links, and project submissions with shorter URLs that look cleaner and feel more professional.</p>
+                        <h3>Custom aliases</h3>
+                        <p>Create memorable short links for assignments, campaigns, portfolios, and product demos instead of relying only on random strings.</p>
                     </article>
                     <article class="seo-card">
-                        <h3>For Render and Vercel links</h3>
-                        <p>Long deployment URLs can be messy. Use urlzap to shorten render links and keep product demos easier to send.</p>
+                        <h3>Expiry controls</h3>
+                        <p>Set links to expire in 24 hours, 7 days, or 30 days when a share should stay temporary instead of living forever.</p>
                     </article>
                     <article class="seo-card">
-                        <h3>For messaging apps</h3>
-                        <p>Clean links are easier to send in WhatsApp and Telegram, especially when you want the message itself to stay readable.</p>
+                        <h3>QR code generation</h3>
+                        <p>Open, download, and reuse QR codes for the same short URL when you need scan-ready sharing for posters, slides, or events.</p>
                     </article>
                     <article class="seo-card">
-                        <h3>For event sharing</h3>
-                        <p>Turn long Google Forms and registration pages into compact links that are easier to place on posters, bios, and event messages.</p>
+                        <h3>Built-in analytics</h3>
+                        <p>Track clicks, review visit history, and keep recent links available in your dashboard so important URLs stay easy to manage.</p>
                     </article>
                 </div>
             </div>
+
+            <div class="seo-layout section-divider">
+                <div>
+                    <span class="pill">Use Cases</span>
+                    <h2>Use one shortener for classrooms, side projects, events, and product demos</h2>
+                    <p>
+                        A strong URL shortener should help both the sender and the person opening the link. That means cleaner copy in chats,
+                        better-looking links in resumes and portfolios, and fast access when people scan or tap your short URL.
+                    </p>
+                    <p>
+                        urlzap works well for students submitting assignments, developers sharing Render or Vercel deployments,
+                        clubs posting registration forms, and teams sending campaign links with QR codes and expiry controls.
+                    </p>
+                </div>
+
+                <div class="seo-card-grid">
+                    <article class="seo-card">
+                        <h3>Assignments and portfolios</h3>
+                        <p>Replace long Google Drive, Docs, Notion, and GitHub URLs with shorter links that feel cleaner in submissions and bios.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>Render and Vercel deployments</h3>
+                        <p>Shorten long deployment links before sharing demos with recruiters, clients, teammates, or hackathon judges.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>Forms and registrations</h3>
+                        <p>Turn Google Forms and event pages into short URLs that are easier to print, announce, and share in group chats.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>Messaging and social sharing</h3>
+                        <p>Keep WhatsApp, Telegram, LinkedIn, and email messages tidy by using links that are short, readable, and easy to trust.</p>
+                    </article>
+                </div>
+            </div>
+
+            <div class="section-divider">
+                <div>
+                    <span class="pill">FAQ</span>
+                    <h2>Common questions about urlzap</h2>
+                    <p class="seo-note">These answers help explain what the product does and what kind of URL shortener experience people can expect.</p>
+                </div>
+
+                <div class="faq-grid">
+                    <article class="seo-card">
+                        <h3>What is urlzap?</h3>
+                        <p>urlzap is a free URL shortener that helps you turn long links into short, shareable URLs with analytics, QR codes, aliases, and expiry options.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>Who is urlzap for?</h3>
+                        <p>It is especially useful for students, developers, project teams, event organizers, and anyone who shares long links often.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>Can I create a QR code for a short link?</h3>
+                        <p>Yes. Each generated short URL can also be opened as a QR code so it is easier to scan from mobile devices and printed materials.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>Can I track clicks?</h3>
+                        <p>Yes. urlzap includes link analytics so you can view click totals and visit history for the short URLs you create.</p>
+                    </article>
+                </div>
+            </div>
+
+            <footer class="seo-footer">
+                <div>
+                    <h2>Start with a clean short link today</h2>
+                    <p class="seo-note">Use urlzap to shorten long URLs, improve sharing, and keep analytics close to the links that matter.</p>
+                </div>
+
+                <nav class="seo-footer-links" aria-label="Footer">
+                    <a href="/">Home</a>
+                    <a href="/about/">About</a>
+                    <a href="/how-it-works/">How It Works</a>
+                    <a href="/features/">Features</a>
+                </nav>
+            </footer>
         </section>
     </main>
 

@@ -1,0 +1,78 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">urlzap social preview</title>
+  <desc id="desc">urlzap URL shortener with QR codes, custom aliases, expiry controls, and analytics.</desc>
+  <defs>
+    <linearGradient id="bg" x1="92" y1="72" x2="1076" y2="560" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#fff6f1"/>
+      <stop offset="1" stop-color="#f5f8ff"/>
+    </linearGradient>
+    <linearGradient id="accent" x1="170" y1="134" x2="1050" y2="506" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff7447" stop-opacity="0.2"/>
+      <stop offset="1" stop-color="#6E97FF" stop-opacity="0.14"/>
+    </linearGradient>
+    <linearGradient id="line" x1="348" y1="290" x2="858" y2="290" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#ff7447"/>
+      <stop offset="1" stop-color="#6E97FF"/>
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)"/>
+  <circle cx="1080" cy="90" r="140" fill="#ffd6c8" opacity="0.5"/>
+  <circle cx="120" cy="566" r="120" fill="#dae5ff" opacity="0.72"/>
+
+  <rect x="72" y="72" width="1056" height="486" rx="42" fill="white" fill-opacity="0.76" stroke="#f0e5df"/>
+  <rect x="122" y="122" width="956" height="386" rx="34" fill="url(#accent)"/>
+
+  <g>
+    <rect x="158" y="154" width="154" height="154" rx="44" fill="#182028"/>
+    <path d="M203 218h62" stroke="#fff" stroke-width="16" stroke-linecap="round"/>
+    <path d="M239 182l36 36-36 36" stroke="#fff" stroke-width="16" stroke-linecap="round" stroke-linejoin="round"/>
+    <circle cx="280" cy="184" r="17" fill="#fff6f1"/>
+    <path d="M280 175.5A8.5 8.5 0 0 0 271.5 184v5h17v-5a8.5 8.5 0 0 0-8.5-8.5Z" fill="#ff7447"/>
+  </g>
+
+  <text x="352" y="210" fill="#182028" font-family="Georgia, 'Times New Roman', serif" font-size="72" font-weight="700" letter-spacing="-2">
+    urlzap
+  </text>
+  <text x="352" y="282" fill="#182028" font-family="'Segoe UI', Trebuchet MS, sans-serif" font-size="34" font-weight="700">
+    Free URL Shortener with QR Codes, Custom Aliases &amp; Analytics
+  </text>
+  <text x="352" y="336" fill="#66727d" font-family="'Segoe UI', Trebuchet MS, sans-serif" font-size="28">
+    Shorten long links, share clean URLs, create scan-ready QR codes,
+  </text>
+  <text x="352" y="376" fill="#66727d" font-family="'Segoe UI', Trebuchet MS, sans-serif" font-size="28">
+    set expiry controls, and track clicks from one simple dashboard.
+  </text>
+
+  <g>
+    <rect x="352" y="414" width="220" height="58" rx="29" fill="#ff7447"/>
+    <text x="398" y="452" fill="#fff" font-family="'Segoe UI', Trebuchet MS, sans-serif" font-size="26" font-weight="700">
+      Custom aliases
+    </text>
+
+    <rect x="592" y="414" width="174" height="58" rx="29" fill="#ffffff" stroke="#e6e9f0"/>
+    <text x="644" y="452" fill="#182028" font-family="'Segoe UI', Trebuchet MS, sans-serif" font-size="26" font-weight="700">
+      QR codes
+    </text>
+
+    <rect x="786" y="414" width="200" height="58" rx="29" fill="#ffffff" stroke="#e6e9f0"/>
+    <text x="836" y="452" fill="#182028" font-family="'Segoe UI', Trebuchet MS, sans-serif" font-size="26" font-weight="700">
+      Analytics
+    </text>
+  </g>
+
+  <g>
+    <rect x="860" y="172" width="164" height="164" rx="26" fill="#fff" stroke="#e6e9f0"/>
+    <rect x="892" y="204" width="26" height="26" fill="#182028"/>
+    <rect x="926" y="204" width="26" height="26" fill="#182028"/>
+    <rect x="960" y="204" width="26" height="26" fill="#182028"/>
+    <rect x="892" y="238" width="26" height="26" fill="#182028"/>
+    <rect x="960" y="238" width="26" height="26" fill="#182028"/>
+    <rect x="926" y="272" width="26" height="26" fill="#182028"/>
+    <rect x="960" y="272" width="26" height="26" fill="#182028"/>
+    <rect x="892" y="306" width="26" height="26" fill="#182028"/>
+    <rect x="926" y="306" width="26" height="26" fill="#182028"/>
+    <rect x="994" y="306" width="26" height="26" fill="#182028"/>
+    <path d="M332 288H860" stroke="url(#line)" stroke-width="12" stroke-linecap="round"/>
+  </g>
+</svg>

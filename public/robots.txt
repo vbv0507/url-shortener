@@ -1,4 +1,7 @@
 User-agent: *
 Allow: /
+Disallow: /api/
+Disallow: /user/
+Disallow: /home
 
 Sitemap: https://urlzap.me/sitemap.xml
