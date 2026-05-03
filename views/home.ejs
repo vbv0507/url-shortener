@@ -705,6 +705,37 @@
             padding: 24px;
         }
 
+        .danger-card {
+            padding: 22px;
+            border-radius: var(--radius-lg);
+            background: linear-gradient(180deg, rgba(196, 72, 50, 0.08), rgba(255, 255, 255, 0.94));
+            border: 1px solid rgba(196, 72, 50, 0.18);
+            box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.7);
+        }
+
+        .danger-card h3 {
+            font-size: 1.35rem;
+            letter-spacing: -0.03em;
+        }
+
+        .danger-card p {
+            margin-top: 10px;
+        }
+
+        .danger-button {
+            background: linear-gradient(135deg, #c44832, #ef7a5f);
+            color: #fff;
+            font-weight: 700;
+            box-shadow: 0 16px 26px rgba(196, 72, 50, 0.18);
+        }
+
+        .danger-note {
+            color: var(--danger);
+            font-size: 0.82rem;
+            font-weight: 600;
+            line-height: 1.55;
+        }
+
         .seo-section {
             margin-top: 24px;
             padding: 42px;
@@ -1268,6 +1299,24 @@
                         <span>Logged In As</span>
                         <strong id="welcome-user">User</strong>
                     </div>
+
+                    <article class="danger-card">
+                        <span class="section-label">Danger Zone</span>
+                        <h3>Delete your account</h3>
+                        <p>Remove your profile and all short links created by this account. This action cannot be undone.</p>
+
+                        <form id="delete-account-form" class="form-grid">
+                            <label class="field" for="delete-account-password">
+                                <span class="field-label">Confirm password</span>
+                                <input id="delete-account-password" name="password" type="password" placeholder="Enter your password" required>
+                            </label>
+
+                            <button type="submit" class="submit-button danger-button">Delete Account</button>
+                        </form>
+
+                        <p class="danger-note">Your saved links, analytics access, and account session will be removed immediately.</p>
+                        <p id="delete-account-status" class="status" role="status" aria-live="polite"></p>
+                    </article>
 
                     <div class="dashboard-side-tools">
                         <article class="card">

@@ -57,6 +57,9 @@ const analyticsCopyLink = document.getElementById("analytics-copy-link");
 const analyticsJson = document.getElementById("analytics-json");
 const analyticsHistory = document.getElementById("analytics-history");
 const analyticsEmpty = document.getElementById("analytics-empty");
+const deleteAccountForm = document.getElementById("delete-account-form");
+const deleteAccountPassword = document.getElementById("delete-account-password");
+const deleteAccountStatus = document.getElementById("delete-account-status");
 
 let createdLinks = [];
 let linkClicks = {};
@@ -205,6 +208,12 @@ function setShortenBusy(isBusy) {
   const submitButton = shortenForm.querySelector(".submit-button");
   submitButton.disabled = isBusy;
   submitButton.textContent = isBusy ? "Generating..." : "Generate Short URL";
+}
+
+function setDeleteAccountBusy(isBusy) {
+  const submitButton = deleteAccountForm.querySelector(".submit-button");
+  submitButton.disabled = isBusy;
+  submitButton.textContent = isBusy ? "Deleting..." : "Delete Account";
 }
 
 function syncPanelHeight() {
@@ -844,6 +853,53 @@ analyticsForm.addEventListener("submit", async (event) => {
     await loadAnalytics(shortId);
   } catch (error) {
     setStatus(analyticsStatus, error.message || "Unable to load analytics.", "error");
+  }
+});
+
+deleteAccountForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  if (!deleteAccountForm.reportValidity()) {
+    setStatus(deleteAccountStatus, "Enter your password to delete the account.", "error");
+    return;
+  }
+
+  setStatus(deleteAccountStatus, "Deleting account...", "");
+  setDeleteAccountBusy(true);
+
+  try {
+    const response = await fetch("/user/deleteUser", {
+      method: "DELETE",
+      credentials: "same-origin",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        password: deleteAccountPassword.value,
+      }),
+    });
+
+    if (response.redirected) {
+      window.location.href = response.url;
+      return;
+    }
+
+    const data = await readJson(response);
+
+    if (!response.ok) {
+      throw new Error(data.message || "Unable to delete account right now.");
+    }
+
+    resetDashboardState();
+    sessionStorage.removeItem("portal_view");
+    sessionStorage.removeItem("portal_user");
+    deleteAccountPassword.value = "";
+    setStatus(deleteAccountStatus, "Account deleted successfully.", "success");
+    window.location.href = "/";
+  } catch (error) {
+    setStatus(deleteAccountStatus, error.message || "Unable to delete account.", "error");
+  } finally {
+    setDeleteAccountBusy(false);
   }
 });
 

@@ -1,8 +1,9 @@
 const User=require('../model/user')
-const {v4:uuidv4}=require('uuid')
+const URL = require("../model/url");
 const { setUser }=require('../services/auth.js')
 const authCookieOptions = {
     httpOnly: true,
+    secure:true,
     sameSite: 'lax',
     path: '/',
 };
@@ -20,7 +21,7 @@ async function signup(req, res) {
         await User.create({
             name,
             email,
-            hashedPassword,
+            password:hashedPassword,
             user_id
         });
 
@@ -72,5 +73,38 @@ async function logout(req, res) {
     res.clearCookie("uid", authCookieOptions);
     return res.redirect("/");
 }
+async function deleteUser(req,res){
+    try {
+        const { password } = req.body || {};
 
-module.exports={signup,login,logout}
+        if (!req.user?._id) {
+            return res.status(401).json({ message: "Authentication required" });
+        }
+
+        if (!password) {
+            return res.status(400).json({ message: "Password is required" });
+        }
+
+        const user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        const isMatch = await bcrypt.compare(password, user.password);
+
+        if (!isMatch) {
+            return res.status(401).json({ message: "Wrong password" });
+        }
+
+        await URL.deleteMany({ createdBy: user._id });
+        await User.deleteOne({ _id: user._id });
+
+        res.clearCookie("uid", authCookieOptions);
+        return res.status(200).json({ message: "User deleted successfully" });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ message: "Unable to delete user right now" });
+    }
+}
+module.exports={signup,login,logout,deleteUser}

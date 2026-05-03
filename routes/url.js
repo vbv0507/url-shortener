@@ -8,7 +8,7 @@ const { restrictToLoggedinUserOnly } = require("../middleware/auth.middleware.js
 router.post('/', restrictToLoggedinUserOnly, createUrlLimiter, generateNewshortUrl);
 router.get('/my-links', restrictToLoggedinUserOnly, getMyLinks);
 router.get('/qr/:shortId',restrictToLoggedinUserOnly,getQrCode);
-router.get('/analytics/:shortid', analyticsLimiter, getanalytics);
+router.get('/analytics/:shortid',restrictToLoggedinUserOnly, analyticsLimiter, getanalytics);
 
 module.exports = router;
 

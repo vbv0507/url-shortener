@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const express = require("express");
 const path = require("path");
-const URL = require("./model/url.js");
 const cookieParser = require("cookie-parser");
 const { restrictToLoggedinUserOnly } = require("./middleware/auth.middleware.js");
 
@@ -34,8 +33,7 @@ app.set("views", path.resolve("./views"));
 
 // Home
 async function renderHome(req, res) {
-  const allurls = await URL.find({}).sort({ createdAt: -1 }).lean();
-  return res.render("home", { urls: allurls });
+  return res.render("home");
 }
 
 // Routes
