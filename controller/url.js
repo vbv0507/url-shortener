@@ -1,82 +1,21 @@
 const { nanoid } = require("nanoid");
-const { URL: NodeURL } = require("node:url");
 const ShortUrl = require("../model/url");
 const QRCode = require("qrcode");
-
-const MAX_REDIRECT_URL_LENGTH = 4096;
-
-function isPrivateIpv4(hostname) {
-  const parts = hostname.split(".");
-
-  if (parts.length !== 4) {
-    return false;
-  }
-
-  const numbers = parts.map((part) => Number(part));
-
-  if (numbers.some((part) => Number.isNaN(part) || part < 0 || part > 255)) {
-    return false;
-  }
-
-  if (numbers[0] === 10) {
-    return true;
-  }
-
-  if (numbers[0] === 0) {
-    return true;
-  }
-
-  if (numbers[0] === 127) {
-    return true;
-  }
-
-  if (numbers[0] === 169 && numbers[1] === 254) {
-    return true;
-  }
-
-  if (numbers[0] === 172 && numbers[1] >= 16 && numbers[1] <= 31) {
-    return true;
-  }
-
-  if (numbers[0] === 192 && numbers[1] === 168) {
-    return true;
-  }
-
-  return false;
-}
-
-function isPrivateHostname(hostname) {
-  const normalizedHostname = hostname.toLowerCase();
-
-  if (normalizedHostname === "localhost" || normalizedHostname === "::1") {
-    return true;
-  }
-
-  if (
-    normalizedHostname.includes(":") &&
-    (
-      normalizedHostname.startsWith("fc") ||
-      normalizedHostname.startsWith("fd") ||
-      normalizedHostname.startsWith("fe80:")
-    )
-  ) {
-    return true;
-  }
-
-  return isPrivateIpv4(normalizedHostname);
-}
-
-
-
 
 async function generateNewshortUrl(req, res) {
   try {
     const body = req.body || {};
-    const rawUrl = body.url || req.query.url;
-    const { normalizedUrl, error: urlError } = normalizeRedirectUrl(rawUrl);
+    const inputUrl = body.url || req.query.url;
+    const rawUrl = typeof inputUrl === "string" ? inputUrl.trim() : "";
 
-    if (urlError) {
-      return res.status(400).json({ error: urlError });
+    if (!rawUrl) {
+      return res.status(400).json({ error: "url is required" });
+    }
+
+    if (!rawUrl.startsWith("http://") && !rawUrl.startsWith("https://")) {
+      return res.status(400).json({
+        error: "URL must start with http:// or https://",
+      });
     }
 
     const rawAlias = body.alias;
@@ -144,7 +83,7 @@ async function generateNewshortUrl(req, res) {
     try {
       await ShortUrl.create({
         shortId: shortid,
-        redirectURL: normalizedUrl,
+        redirectURL: rawUrl,
         expiresAt: expiresAt,
         visitHistory: [],
         createdBy: req.user._id
@@ -170,7 +109,7 @@ async function generateNewshortUrl(req, res) {
 
         await ShortUrl.create({
           shortId: shortid,
-          redirectURL: normalizedUrl,
+          redirectURL: rawUrl,
           expiresAt: expiresAt,
           visitHistory: [],
           createdBy: req.user._id
