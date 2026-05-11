@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Free URL Shortener with QR Codes, Custom Aliases &amp; Analytics | urlzap</title>
-    <meta name="description" content="Shorten long URLs instantly with custom aliases, QR codes, expiry controls, and click analytics. urlzap is a free URL shortener for students, developers, and teams.">
+    <meta name="description" content="Shorten long URLs instantly with custom aliases, QR codes, expiry controls, URL expansion, and click analytics. urlzap is a free URL shortener for students, developers, and teams.">
     <meta name="author" content="Vaibhav Rai">
     <meta name="robots" content="index, follow, max-image-preview:large">
     <meta name="google-site-verification" content="fbITtbyZqY1F3jCy83Olc0VlUawL_3SWwpoDCurLbKQ">
@@ -43,7 +43,7 @@
                     "@id": "https://urlzap.me/#website",
                     "url": "https://urlzap.me/",
                     "name": "urlzap",
-                    "description": "Free URL shortener with custom aliases, QR codes, expiry controls, and analytics.",
+                    "description": "Free URL shortener with custom aliases, QR codes, expiry controls, URL expansion, and analytics.",
                     "publisher": {
                         "@id": "https://urlzap.me/#organization"
                     }
@@ -65,6 +65,7 @@
                         "Custom aliases",
                         "Expiry controls",
                         "QR code generation",
+                        "URL expansion",
                         "Click analytics"
                     ],
                     "publisher": {
@@ -1012,7 +1013,8 @@
             word-break: break-word;
         }
 
-        .analytics-summary {
+        .analytics-summary,
+        .expand-summary {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
             gap: 14px;
@@ -1190,6 +1192,7 @@
             .switcher,
             .form-row,
             .analytics-summary,
+            .expand-summary,
             .dashboard-stats,
             .seo-card-grid,
             .faq-grid,
@@ -1296,6 +1299,45 @@
                 </section>
 
                 <section class="right-side">
+                    <article class="card">
+                        <h2>Expand any short URL</h2>
+                        <p>Check the final destination, redirect state, and HTTP status before opening a short link.</p>
+
+                        <form id="public-expand-form" class="form-grid">
+                            <label class="field" for="public-expand-input">
+                                <span class="field-label">Short URL</span>
+                                <input id="public-expand-input" name="url" type="url" placeholder="https://short.link/abc12" pattern="https?://.+" required>
+                                <span class="field-hint">Public tool. No account needed for HTTP or HTTPS links.</span>
+                            </label>
+
+                            <button type="submit" class="submit-button">Expand URL</button>
+                        </form>
+
+                        <p id="public-expand-status" class="status" role="status" aria-live="polite"></p>
+
+                        <section id="public-expand-result" class="result-card" hidden>
+                            <span class="section-label">Expanded Link</span>
+                            <p id="public-expand-original" class="original-url"></p>
+                            <div class="expand-summary">
+                                <div class="stat-box link-stat">
+                                    <span>Final URL</span>
+                                    <strong id="public-expand-final-url">No result yet</strong>
+                                </div>
+                                <div class="stat-box">
+                                    <span>HTTP Status</span>
+                                    <strong id="public-expand-http-status">0</strong>
+                                </div>
+                            </div>
+                            <div class="result-meta">
+                                <span id="public-expand-redirected" class="meta-chip"></span>
+                            </div>
+                            <div class="actions">
+                                <a id="public-expand-open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Final URL</a>
+                                <button type="button" id="public-expand-copy-link" class="secondary-button">Copy Final URL</button>
+                            </div>
+                        </section>
+                    </article>
+
                     <article class="card">
                         <h2>Account access</h2>
                         <p>Select an option below.</p>
@@ -1597,6 +1639,45 @@
                         </section>
                     </article>
 
+                    <article class="card">
+                        <h2>Expand a short URL</h2>
+                        <p>Preview where a short link resolves before you open or share it.</p>
+
+                        <form id="expand-form" class="form-grid">
+                            <label class="field" for="expand-input">
+                                <span class="field-label">Short URL</span>
+                                <input id="expand-input" name="url" type="url" placeholder="https://short.link/abc12" pattern="https?://.+" required>
+                                <span class="field-hint">Works with urlzap links and other HTTP or HTTPS short links.</span>
+                            </label>
+
+                            <button type="submit" class="submit-button">Expand URL</button>
+                        </form>
+
+                        <p id="expand-status" class="status" role="status" aria-live="polite"></p>
+
+                        <section id="expand-result" class="result-card" hidden>
+                            <span class="section-label">Expanded Link</span>
+                            <p id="expand-original" class="original-url"></p>
+                            <div class="expand-summary">
+                                <div class="stat-box link-stat">
+                                    <span>Final URL</span>
+                                    <strong id="expand-final-url">No result yet</strong>
+                                </div>
+                                <div class="stat-box">
+                                    <span>HTTP Status</span>
+                                    <strong id="expand-http-status">0</strong>
+                                </div>
+                            </div>
+                            <div class="result-meta">
+                                <span id="expand-redirected" class="meta-chip"></span>
+                            </div>
+                            <div class="actions">
+                                <a id="expand-open-link" class="button-link" href="#" target="_blank" rel="noreferrer">Open Final URL</a>
+                                <button type="button" id="expand-copy-link" class="secondary-button">Copy Final URL</button>
+                            </div>
+                        </section>
+                    </article>
+
                 </section>
             </div>
         </section>
@@ -1605,10 +1686,10 @@
             <div class="seo-layout">
                 <div>
                     <span class="pill">Why urlzap</span>
-                    <h2 id="why-urlzap-heading">A free URL shortener with QR codes, custom aliases &amp; analytics</h2>
+                    <h2 id="why-urlzap-heading">A free URL shortener with QR codes, custom aliases, URL expansion &amp; analytics</h2>
                     <p>
                         urlzap is built for people who want more than a basic short link. You can shorten long URLs, choose a custom alias,
-                        generate a QR code, set link expiry, and check click analytics from the same dashboard.
+                        generate a QR code, set link expiry, expand short URLs, and check click analytics from the same dashboard.
                     </p>
                     <p>
                         Whether you are sharing assignment links, project demos, portfolio pages, Google Forms, event registrations, or deployment URLs,
@@ -1641,6 +1722,10 @@
                     <article class="seo-card">
                         <h3>Built-in analytics</h3>
                         <p>Track clicks, review visit history, and keep recent links available in your dashboard so important URLs stay easy to manage.</p>
+                    </article>
+                    <article class="seo-card">
+                        <h3>URL expansion</h3>
+                        <p>Paste a short URL to reveal its final destination, redirect status, and HTTP status before opening it.</p>
                     </article>
                 </div>
             </div>

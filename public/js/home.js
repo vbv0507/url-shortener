@@ -57,6 +57,26 @@ const analyticsCopyLink = document.getElementById("analytics-copy-link");
 const analyticsJson = document.getElementById("analytics-json");
 const analyticsHistory = document.getElementById("analytics-history");
 const analyticsEmpty = document.getElementById("analytics-empty");
+const publicExpandForm = document.getElementById("public-expand-form");
+const publicExpandInput = document.getElementById("public-expand-input");
+const publicExpandStatus = document.getElementById("public-expand-status");
+const publicExpandResult = document.getElementById("public-expand-result");
+const publicExpandOriginal = document.getElementById("public-expand-original");
+const publicExpandFinalUrl = document.getElementById("public-expand-final-url");
+const publicExpandHttpStatus = document.getElementById("public-expand-http-status");
+const publicExpandRedirected = document.getElementById("public-expand-redirected");
+const publicExpandOpenLink = document.getElementById("public-expand-open-link");
+const publicExpandCopyLink = document.getElementById("public-expand-copy-link");
+const expandForm = document.getElementById("expand-form");
+const expandInput = document.getElementById("expand-input");
+const expandStatus = document.getElementById("expand-status");
+const expandResult = document.getElementById("expand-result");
+const expandOriginal = document.getElementById("expand-original");
+const expandFinalUrl = document.getElementById("expand-final-url");
+const expandHttpStatus = document.getElementById("expand-http-status");
+const expandRedirected = document.getElementById("expand-redirected");
+const expandOpenLink = document.getElementById("expand-open-link");
+const expandCopyLink = document.getElementById("expand-copy-link");
 const deleteAccountForm = document.getElementById("delete-account-form");
 const deleteAccountPassword = document.getElementById("delete-account-password");
 const deleteAccountStatus = document.getElementById("delete-account-status");
@@ -214,6 +234,12 @@ function setDeleteAccountBusy(isBusy) {
   const submitButton = deleteAccountForm.querySelector(".submit-button");
   submitButton.disabled = isBusy;
   submitButton.textContent = isBusy ? "Deleting..." : "Delete Account";
+}
+
+function setExpandBusy(form, isBusy) {
+  const submitButton = form.querySelector(".submit-button");
+  submitButton.disabled = isBusy;
+  submitButton.textContent = isBusy ? "Expanding..." : "Expand URL";
 }
 
 function syncPanelHeight() {
@@ -540,7 +566,14 @@ function createSavedLinkItem(record) {
   qrButton.dataset.shortId = record.shortId;
   qrButton.textContent = "QR";
 
-  actions.append(copyButton, openButton, analyticsButton, qrButton);
+  const expandButton = document.createElement("button");
+  expandButton.type = "button";
+  expandButton.className = "secondary-button";
+  expandButton.dataset.linkAction = "expand";
+  expandButton.dataset.linkUrl = record.shortUrl;
+  expandButton.textContent = "Expand";
+
+  actions.append(copyButton, openButton, analyticsButton, qrButton, expandButton);
   item.append(top, shortLinkNode, original, meta, actions);
 
   return item;
@@ -629,6 +662,93 @@ async function loadAnalytics(shortId) {
 
   renderAnalytics(shortId, data);
   setStatus(analyticsStatus, "Analytics loaded.", "success");
+}
+
+function renderExpandedUrl(data, elements) {
+  const inputUrl = data.url || elements.input.value.trim();
+  const finalUrl = data.final_url || "";
+
+  elements.original.textContent = `Input: ${inputUrl}`;
+  elements.finalUrl.textContent = finalUrl || "No final URL returned";
+  elements.httpStatus.textContent = data.status ? String(data.status) : "Unknown";
+  elements.redirected.textContent = data.redirected ? "Redirect followed" : "No redirect detected";
+
+  if (finalUrl) {
+    elements.openLink.href = finalUrl;
+    elements.copyLink.disabled = false;
+  } else {
+    elements.openLink.removeAttribute("href");
+    elements.copyLink.disabled = true;
+  }
+
+  elements.result.hidden = false;
+}
+
+async function expandUrl(url, elements) {
+  const response = await fetch("/api/url/expand", {
+    method: "POST",
+    credentials: "same-origin",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ url }),
+  });
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(data.error || "Unable to expand this URL right now.");
+  }
+
+  renderExpandedUrl(data, elements);
+  return data;
+}
+
+function getPublicExpandElements() {
+  return {
+    input: publicExpandInput,
+    status: publicExpandStatus,
+    result: publicExpandResult,
+    original: publicExpandOriginal,
+    finalUrl: publicExpandFinalUrl,
+    httpStatus: publicExpandHttpStatus,
+    redirected: publicExpandRedirected,
+    openLink: publicExpandOpenLink,
+    copyLink: publicExpandCopyLink,
+  };
+}
+
+function getDashboardExpandElements() {
+  return {
+    input: expandInput,
+    status: expandStatus,
+    result: expandResult,
+    original: expandOriginal,
+    finalUrl: expandFinalUrl,
+    httpStatus: expandHttpStatus,
+    redirected: expandRedirected,
+    openLink: expandOpenLink,
+    copyLink: expandCopyLink,
+  };
+}
+
+async function handleExpandSubmit(form, elements) {
+  if (!form.reportValidity()) {
+    setStatus(elements.status, "Enter a valid HTTP or HTTPS URL.", "error");
+    return;
+  }
+
+  const url = elements.input.value.trim();
+  setStatus(elements.status, "Expanding URL...", "");
+  setExpandBusy(form, true);
+
+  try {
+    await expandUrl(url, elements);
+    setStatus(elements.status, "Final URL loaded.", "success");
+  } catch (error) {
+    setStatus(elements.status, error.message || "Unable to expand URL.", "error");
+  } finally {
+    setExpandBusy(form, false);
+  }
 }
 
 signupTab.addEventListener("click", () => {
@@ -861,6 +981,23 @@ savedLinksList.addEventListener("click", async (event) => {
     } catch (error) {
       setStatus(analyticsStatus, error.message || "Unable to load analytics.", "error");
     }
+    return;
+  }
+
+  if (actionButton.dataset.linkAction === "expand") {
+    const linkUrl = actionButton.dataset.linkUrl || "";
+    expandInput.value = linkUrl;
+    setStatus(expandStatus, "Expanding URL...", "");
+    setExpandBusy(expandForm, true);
+
+    try {
+      await expandUrl(linkUrl, getDashboardExpandElements());
+      setStatus(expandStatus, "Final URL loaded.", "success");
+    } catch (error) {
+      setStatus(expandStatus, error.message || "Unable to expand URL.", "error");
+    } finally {
+      setExpandBusy(expandForm, false);
+    }
   }
 });
 
@@ -878,6 +1015,34 @@ analyticsForm.addEventListener("submit", async (event) => {
     await loadAnalytics(shortId);
   } catch (error) {
     setStatus(analyticsStatus, error.message || "Unable to load analytics.", "error");
+  }
+});
+
+expandForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await handleExpandSubmit(expandForm, getDashboardExpandElements());
+});
+
+expandCopyLink.addEventListener("click", async () => {
+  try {
+    await copyText(expandOpenLink.href);
+    setStatus(expandStatus, "Final URL copied.", "success");
+  } catch (error) {
+    setStatus(expandStatus, "Unable to copy final URL automatically.", "error");
+  }
+});
+
+publicExpandForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+  await handleExpandSubmit(publicExpandForm, getPublicExpandElements());
+});
+
+publicExpandCopyLink.addEventListener("click", async () => {
+  try {
+    await copyText(publicExpandOpenLink.href);
+    setStatus(publicExpandStatus, "Final URL copied.", "success");
+  } catch (error) {
+    setStatus(publicExpandStatus, "Unable to copy final URL automatically.", "error");
   }
 });
 

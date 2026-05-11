@@ -337,4 +337,39 @@ async function getMyLinks(req,res){
   }
 }
 
-module.exports = { generateNewshortUrl, redirecturl, getanalytics , getMyLinks,getQrCode};
+async function urlexpand(req,res){
+  try {
+    const url = req.body.url;
+
+    if (!url) {
+      return res.status(400).json({ error: "url is required" });
+    }
+
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      return res.status(400).json({
+        error: "URL must start with http:// or https://",
+      });
+    }
+
+    const response = await fetch(url, {
+      redirect: "follow",
+    });
+
+    const finalUrl = response.url;
+
+    console.log(`this is the short url: ${url} and this is the orginal url ${finalUrl}`);
+
+    return res.json({
+      url,
+      final_url: finalUrl,
+      redirected: finalUrl !== url,
+      status: response.status,
+      safe: true,
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(502).json({ error: "Unable to expand this URL" });
+  }
+}
+
+module.exports = { generateNewshortUrl, redirecturl, getanalytics , getMyLinks,getQrCode,urlexpand};
