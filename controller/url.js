@@ -4,14 +4,6 @@ const ShortUrl = require("../model/url");
 const QRCode = require("qrcode");
 
 const MAX_REDIRECT_URL_LENGTH = 4096;
-const EXPAND_URL_TIMEOUT_MS = 10000;
-const EXPAND_URL_HEADERS = {
-  "User-Agent":
-    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
-  Accept:
-    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
-  "Accept-Language": "en-US,en;q=0.9",
-};
 
 function isPrivateIpv4(hostname) {
   const parts = hostname.split(".");
@@ -74,56 +66,7 @@ function isPrivateHostname(hostname) {
   return isPrivateIpv4(normalizedHostname);
 }
 
-function normalizeRedirectUrl(rawUrl) {
-  const trimmedUrl = typeof rawUrl === "string" ? rawUrl.trim() : "";
 
-  if (!trimmedUrl) {
-    return { error: "url is required" };
-  }
-
-  if (trimmedUrl.length > MAX_REDIRECT_URL_LENGTH) {
-    return { error: "URL is too long" };
-  }
-
-  if (/[\u0000-\u001F\u007F]/.test(trimmedUrl)) {
-    return { error: "URL contains invalid characters" };
-  }
-
-  let parsedUrl;
-
-  try {
-    parsedUrl = new NodeURL(trimmedUrl);
-  } catch (error) {
-    return { error: "Invalid URL. Include http:// or https://" };
-  }
-
-  if (!["http:", "https:"].includes(parsedUrl.protocol)) {
-    return { error: "Only http and https URLs are allowed" };
-  }
-
-  if (parsedUrl.username || parsedUrl.password) {
-    return { error: "URLs with embedded credentials are not allowed" };
-  }
-
-  if (!parsedUrl.hostname) {
-    return { error: "Invalid URL hostname" };
-  }
-
-  parsedUrl.hostname = parsedUrl.hostname.toLowerCase();
-
-  if (isPrivateHostname(parsedUrl.hostname)) {
-    return { error: "Local or private network URLs are not allowed" };
-  }
-
-  if (
-    (parsedUrl.protocol === "http:" && parsedUrl.port === "80") ||
-    (parsedUrl.protocol === "https:" && parsedUrl.port === "443")
-  ) {
-    parsedUrl.port = "";
-  }
-
-  return { normalizedUrl: parsedUrl.toString() };
-}
 
 
 async function generateNewshortUrl(req, res) {
@@ -348,57 +291,49 @@ async function getMyLinks(req,res){
 async function urlexpand(req,res){
   try {
     const url = req.body.url;
-    const { normalizedUrl, error: urlError } = normalizeRedirectUrl(url);
 
-    if (urlError) {
-      return res.status(400).json({ error: urlError });
+    if (!url) {
+      return res.status(400).json({ error: "url is required" });
     }
 
-    const controller = new AbortController();
-    const timeout = setTimeout(() => controller.abort(), EXPAND_URL_TIMEOUT_MS);
-
-    let response;
-
-    try {
-      response = await fetch(normalizedUrl, {
-        headers: EXPAND_URL_HEADERS,
-        redirect: "follow",
-        signal: controller.signal,
+    if (!url.startsWith("http://") && !url.startsWith("https://")) {
+      return res.status(400).json({
+        error: "URL must start with http:// or https://",
       });
-    } finally {
-      clearTimeout(timeout);
     }
 
-    const finalUrl = response.url;
-    const blockedByChallenge =
-      response.status === 403 &&
-      response.headers.get("cf-mitigated") === "challenge" &&
-      finalUrl === normalizedUrl;
+    const response = await fetch(url, {
+      redirect: "follow",
+    });
 
-    if (blockedByChallenge) {
-      return res.status(403).json({
+    if (!response.ok) {
+      return res.status(response.status).json({
         error:
-          "This shortener is blocking server-side expansion with a browser security challenge.",
-        url: normalizedUrl,
-        final_url: finalUrl,
+          "Issue with this URL or Cloudflare is blocking the request.",
+        url,
+        final_url: response.url,
         redirected: false,
         status: response.status,
         safe: false,
       });
     }
 
-    console.log(`this is the short url: ${normalizedUrl} and this is the orginal url ${finalUrl}`);
+    const finalUrl = response.url;
+
+    console.log(`this is the short url: ${url} and this is the orginal url ${finalUrl}`);
 
     return res.json({
-      url: normalizedUrl,
+      url,
       final_url: finalUrl,
-      redirected: finalUrl !== normalizedUrl,
+      redirected: finalUrl !== url,
       status: response.status,
       safe: true,
     });
   } catch (error) {
     console.error(error);
-    return res.status(502).json({ error: "Unable to expand this URL" });
+    return res.status(502).json({
+      error: "Issue with this URL or Cloudflare is blocking the request.",
+    });
   }
 }
 
