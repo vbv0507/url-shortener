@@ -4,6 +4,14 @@ const ShortUrl = require("../model/url");
 const QRCode = require("qrcode");
 
 const MAX_REDIRECT_URL_LENGTH = 4096;
+const EXPAND_URL_TIMEOUT_MS = 10000;
+const EXPAND_URL_HEADERS = {
+  "User-Agent":
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36",
+  Accept:
+    "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,*/*;q=0.8",
+  "Accept-Language": "en-US,en;q=0.9",
+};
 
 function isPrivateIpv4(hostname) {
   const parts = hostname.split(".");
@@ -340,29 +348,51 @@ async function getMyLinks(req,res){
 async function urlexpand(req,res){
   try {
     const url = req.body.url;
+    const { normalizedUrl, error: urlError } = normalizeRedirectUrl(url);
 
-    if (!url) {
-      return res.status(400).json({ error: "url is required" });
+    if (urlError) {
+      return res.status(400).json({ error: urlError });
     }
 
-    if (!url.startsWith("http://") && !url.startsWith("https://")) {
-      return res.status(400).json({
-        error: "URL must start with http:// or https://",
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), EXPAND_URL_TIMEOUT_MS);
+
+    let response;
+
+    try {
+      response = await fetch(normalizedUrl, {
+        headers: EXPAND_URL_HEADERS,
+        redirect: "follow",
+        signal: controller.signal,
+      });
+    } finally {
+      clearTimeout(timeout);
+    }
+
+    const finalUrl = response.url;
+    const blockedByChallenge =
+      response.status === 403 &&
+      response.headers.get("cf-mitigated") === "challenge" &&
+      finalUrl === normalizedUrl;
+
+    if (blockedByChallenge) {
+      return res.status(403).json({
+        error:
+          "This shortener is blocking server-side expansion with a browser security challenge.",
+        url: normalizedUrl,
+        final_url: finalUrl,
+        redirected: false,
+        status: response.status,
+        safe: false,
       });
     }
 
-    const response = await fetch(url, {
-      redirect: "follow",
-    });
-
-    const finalUrl = response.url;
-
-    console.log(`this is the short url: ${url} and this is the orginal url ${finalUrl}`);
+    console.log(`this is the short url: ${normalizedUrl} and this is the orginal url ${finalUrl}`);
 
     return res.json({
-      url,
+      url: normalizedUrl,
       final_url: finalUrl,
-      redirected: finalUrl !== url,
+      redirected: finalUrl !== normalizedUrl,
       status: response.status,
       safe: true,
     });
