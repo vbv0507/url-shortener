@@ -266,12 +266,6 @@
             line-height: 1.75;
         }
 
-        .info-list {
-            display: grid;
-            grid-template-columns: repeat(2, minmax(0, 1fr));
-            gap: 14px;
-        }
-
         .hero-visual {
             position: relative;
             overflow: hidden;
@@ -316,27 +310,10 @@
             height: 100%;
         }
 
-        .info-card {
-            padding: 18px 20px;
-            border-radius: var(--radius-lg);
-            background: rgba(255, 255, 255, 0.58);
-            border: 1px solid rgba(24, 31, 38, 0.08);
-        }
-
-        .info-card strong {
-            display: block;
-            margin-bottom: 6px;
-            font-size: 1rem;
-        }
-
-        .info-card span {
-            color: var(--muted);
-            line-height: 1.6;
-        }
-
         .right-side {
-            display: flex;
-            align-items: center;
+            display: grid;
+            gap: 18px;
+            align-content: start;
         }
 
         .card {
@@ -1013,10 +990,16 @@
             word-break: break-word;
         }
 
-        .analytics-summary,
-        .expand-summary {
+        .analytics-summary {
             display: grid;
             grid-template-columns: repeat(2, minmax(0, 1fr));
+            gap: 14px;
+            margin-top: 18px;
+        }
+
+        .expand-summary {
+            display: grid;
+            grid-template-columns: 1fr;
             gap: 14px;
             margin-top: 18px;
         }
@@ -1195,8 +1178,7 @@
             .expand-summary,
             .dashboard-stats,
             .seo-card-grid,
-            .faq-grid,
-            .info-list {
+            .faq-grid {
                 grid-template-columns: 1fr;
                 border-radius: 24px;
             }
@@ -1240,9 +1222,7 @@
                         <span class="pill">Free URL Shortener</span>
                         <h1>Shorten links, share faster, track what works.</h1>
                         <p class="intro-copy">
-                            Convert bulky long URLs into clean short links in one step.
-                            urlzap is a free URL shortener for students, developers, creators, and teams who want custom aliases,
-                            QR codes, expiry controls, and analytics without a complicated workflow.
+                            Convert bulky URLs into clean short links, or paste a short link to check where it goes before you open it.
                         </p>
                     </div>
 
@@ -1278,36 +1258,18 @@
                         </svg>
                     </div>
 
-                    <div class="info-list">
-                        <div class="info-card">
-                            <strong>Students</strong>
-                            <span>Share assignment links, project submissions, and reference material in a cleaner format.</span>
-                        </div>
-                        <div class="info-card">
-                            <strong>Developers</strong>
-                            <span>Turn long Render, Vercel, and deployment URLs into short links that are easier to send, scan, and remember.</span>
-                        </div>
-                        <div class="info-card">
-                            <strong>QR-ready sharing</strong>
-                            <span>Generate QR codes for short links so people can scan and open them instantly from posters, slides, and screens.</span>
-                        </div>
-                        <div class="info-card">
-                            <strong>Event organizers</strong>
-                            <span>Share registration forms, schedules, and event pages with branded short links, expiry settings, and click tracking.</span>
-                        </div>
-                    </div>
                 </section>
 
                 <section class="right-side">
                     <article class="card">
                         <h2>Expand any short URL</h2>
-                        <p>Check the final destination, redirect state, and HTTP status before opening a short link.</p>
+                        <p>Paste a short link and see its final destination.</p>
 
                         <form id="public-expand-form" class="form-grid">
                             <label class="field" for="public-expand-input">
                                 <span class="field-label">Short URL</span>
                                 <input id="public-expand-input" name="url" type="url" placeholder="https://short.link/abc12" pattern="https?://.+" required>
-                                <span class="field-hint">Public tool. No account needed for HTTP or HTTPS links.</span>
+                                <span class="field-hint">No account needed.</span>
                             </label>
 
                             <button type="submit" class="submit-button">Expand URL</button>
@@ -1340,7 +1302,7 @@
 
                     <article class="card">
                         <h2>Account access</h2>
-                        <p>Select an option below.</p>
+                        <p>Sign in to create short links, QR codes, expiry rules, and analytics.</p>
 
                         <div class="switcher" role="tablist" aria-label="Authentication forms">
                             <button id="signup-tab" class="active" type="button" role="tab" aria-selected="true">Create Account</button>
