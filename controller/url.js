@@ -276,4 +276,32 @@ async function urlexpand(req,res){
   }
 }
 
-module.exports = { generateNewshortUrl, redirecturl, getanalytics , getMyLinks,getQrCode,urlexpand};
+async function deletelink(req, res) {
+  try {
+    const shortId = req.params.shortId;
+    const userId = req.user._id;
+
+    const deletedLink = await ShortUrl.findOneAndDelete({
+      shortId: shortId,
+      createdBy: userId,
+    });
+
+    if (!deletedLink) {
+      return res.status(404).json({
+        error: "Short URL not found or you are not allowed to delete it",
+      });
+    }
+
+    return res.status(200).json({
+      message: "Short URL deleted successfully",
+    });
+  } catch (error) {
+    console.error(error);
+    return res.status(500).json({
+      error: "Unable to delete short URL",
+    });
+  }
+}
+
+
+module.exports = { generateNewshortUrl, redirecturl, getanalytics , getMyLinks,getQrCode,urlexpand,deletelink};

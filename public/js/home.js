@@ -476,6 +476,17 @@ function findCreatedLinkRecord(shortId) {
   return createdLinkRecords.find((record) => record.shortId === shortId) || null;
 }
 
+function removeCreatedLinkRecord(shortId) {
+  createdLinkRecords = createdLinkRecords.filter((record) => record.shortId !== shortId);
+  rebuildDashboardCaches();
+  renderDashboardStats();
+  renderSavedLinks();
+
+  if (latestShortId === shortId) {
+    latestShortId = createdLinks[createdLinks.length - 1] || "";
+  }
+}
+
 function populateGeneratedLinkCard(record) {
   if (!record || !record.shortId) {
     return;
@@ -573,7 +584,14 @@ function createSavedLinkItem(record) {
   expandButton.dataset.linkUrl = record.shortUrl;
   expandButton.textContent = "Expand";
 
-  actions.append(copyButton, openButton, analyticsButton, qrButton, expandButton);
+  const deleteButton = document.createElement("button");
+  deleteButton.type = "button";
+  deleteButton.className = "secondary-button danger-button";
+  deleteButton.dataset.linkAction = "delete";
+  deleteButton.dataset.shortId = record.shortId;
+  deleteButton.textContent = "Delete";
+
+  actions.append(copyButton, openButton, analyticsButton, qrButton, expandButton, deleteButton);
   item.append(top, shortLinkNode, original, meta, actions);
 
   return item;
@@ -997,6 +1015,39 @@ savedLinksList.addEventListener("click", async (event) => {
       setStatus(expandStatus, error.message || "Unable to expand URL.", "error");
     } finally {
       setExpandBusy(expandForm, false);
+    }
+    return;
+  }
+
+  if (actionButton.dataset.linkAction === "delete") {
+    const shortId = actionButton.dataset.shortId || "";
+    const confirmed = window.confirm(`Delete ${getShortDisplayUrl(shortId)}?`);
+
+    if (!confirmed) {
+      return;
+    }
+
+    actionButton.disabled = true;
+    actionButton.textContent = "Deleting...";
+    setStatus(shortenStatus, "Deleting short URL...", "");
+
+    try {
+      const response = await fetch(`/api/url/${shortId}`, {
+        method: "DELETE",
+        credentials: "same-origin",
+      });
+      const data = await readJson(response);
+
+      if (!response.ok) {
+        throw new Error(data.error || "Unable to delete this short URL right now.");
+      }
+
+      removeCreatedLinkRecord(shortId);
+      setStatus(shortenStatus, data.message || "Short URL deleted.", "success");
+    } catch (error) {
+      actionButton.disabled = false;
+      actionButton.textContent = "Delete";
+      setStatus(shortenStatus, error.message || "Unable to delete short URL.", "error");
     }
   }
 });
