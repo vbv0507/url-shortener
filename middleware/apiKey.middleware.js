@@ -1,4 +1,4 @@
-const ApiKey=require('../model/apikey');
+const User=require('../model/user');
 
 async function verifyApiKey(req,res,next){
   try{
@@ -10,18 +10,18 @@ async function verifyApiKey(req,res,next){
       });
     }
 
-    const validKey=await ApiKey.findOne({
-      key:apiKey,
+    const validUser=await User.findOne({
+      apiKey,
     });
 
-    if(!validKey){
+    if(!validUser){
       return res.status(403).json({
         error:'Invalid API key',
       });
     }
 
     req.user={
-      _id:validKey.owner,
+      _id:validUser._id,
     };
 
     next();

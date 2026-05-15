@@ -8,6 +8,12 @@ const authCookieOptions = {
     path: '/',
 };
 const bcrypt=require("bcrypt");
+const crypto=require("crypto");
+
+function generateApiKey() {
+    return crypto.randomBytes(32).toString("hex");
+}
+
 async function signup(req, res) {
     try {
         console.log("BODY:", req.body);
@@ -22,7 +28,8 @@ async function signup(req, res) {
             name,
             email,
             password:hashedPassword,
-            user_id
+            user_id,
+            apiKey:generateApiKey()
         });
 
         return res.json({ message: "User created" }).redirect('/login');
@@ -30,6 +37,33 @@ async function signup(req, res) {
     } catch (err) {
         console.error(err);
         return res.status(500).send(err.message);
+    }
+}
+
+async function getApiKey(req,res){
+    try {
+        if (!req.user?._id) {
+            return res.status(401).json({ error: "Authentication required" });
+        }
+
+        let user = await User.findById(req.user._id);
+
+        if (!user) {
+            return res.status(404).json({ error: "User not found" });
+        }
+
+        if (!user.apiKey) {
+            user.apiKey = generateApiKey();
+            await user.save();
+        }
+
+        return res.status(200).json({
+            apiKey:user.apiKey,
+            createdAt:user.createdAt,
+        });
+    } catch (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Unable to fetch API key right now" });
     }
 }
 
@@ -107,4 +141,4 @@ async function deleteUser(req,res){
         return res.status(500).json({ message: "Unable to delete user right now" });
     }
 }
-module.exports={signup,login,logout,deleteUser}
+module.exports={signup,login,logout,deleteUser,getApiKey}

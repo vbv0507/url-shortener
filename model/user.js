@@ -17,6 +17,11 @@ const userSchema=new mongoose.Schema({
         type:String,
         unique:true,
         require:true
+    },
+    apiKey:{
+        type:String,
+        unique:true,
+        sparse:true
     }
 },{timestamps:true})
 

@@ -252,7 +252,7 @@ function setExpandBusy(form, isBusy) {
 function setApiKeyBusy(isBusy) {
   const submitButton = apiKeyForm.querySelector(".submit-button");
   submitButton.disabled = isBusy;
-  submitButton.textContent = isBusy ? "Generating..." : "Generate API Key";
+  submitButton.textContent = isBusy ? "Loading..." : "Get API Key";
 }
 
 function syncPanelHeight() {
@@ -733,14 +733,13 @@ function renderApiKey(data) {
 }
 
 async function generateApiKey() {
-  const response = await fetch("/api/key/generate", {
-    method: "POST",
+  const response = await fetch("/user/api-key", {
     credentials: "same-origin",
   });
   const data = await readJson(response);
 
   if (!response.ok) {
-    throw new Error(data.error || "Unable to generate an API key right now.");
+    throw new Error(data.error || "Unable to get your API key right now.");
   }
 
   return data;
@@ -1118,14 +1117,14 @@ apiKeyForm.addEventListener("submit", async (event) => {
 
   resetApiKeyResult();
   setApiKeyBusy(true);
-  setStatus(apiKeyStatus, "Generating API key...", "");
+  setStatus(apiKeyStatus, "Loading API key...", "");
 
   try {
     const data = await generateApiKey();
     renderApiKey(data);
-    setStatus(apiKeyStatus, "API key generated.", "success");
+    setStatus(apiKeyStatus, "API key loaded.", "success");
   } catch (error) {
-    setStatus(apiKeyStatus, error.message || "Unable to generate API key.", "error");
+    setStatus(apiKeyStatus, error.message || "Unable to get API key.", "error");
   } finally {
     setApiKeyBusy(false);
   }
