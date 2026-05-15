@@ -57,6 +57,12 @@ const analyticsCopyLink = document.getElementById("analytics-copy-link");
 const analyticsJson = document.getElementById("analytics-json");
 const analyticsHistory = document.getElementById("analytics-history");
 const analyticsEmpty = document.getElementById("analytics-empty");
+const apiKeyForm = document.getElementById("api-key-form");
+const apiKeyStatus = document.getElementById("api-key-status");
+const apiKeyResult = document.getElementById("api-key-result");
+const apiKeyOutput = document.getElementById("api-key-output");
+const apiKeyCreated = document.getElementById("api-key-created");
+const copyApiKey = document.getElementById("copy-api-key");
 const publicExpandForm = document.getElementById("public-expand-form");
 const publicExpandInput = document.getElementById("public-expand-input");
 const publicExpandStatus = document.getElementById("public-expand-status");
@@ -131,6 +137,7 @@ function resetDashboardState() {
   latestShortId = "";
   clearLegacyDashboardStorage();
   resetQrPreview();
+  resetApiKeyResult();
   renderDashboardStats();
   renderSavedLinks();
 }
@@ -242,6 +249,12 @@ function setExpandBusy(form, isBusy) {
   submitButton.textContent = isBusy ? "Expanding..." : "Expand URL";
 }
 
+function setApiKeyBusy(isBusy) {
+  const submitButton = apiKeyForm.querySelector(".submit-button");
+  submitButton.disabled = isBusy;
+  submitButton.textContent = isBusy ? "Generating..." : "Generate API Key";
+}
+
 function syncPanelHeight() {
   panelWrap.style.height = "auto";
 }
@@ -301,6 +314,12 @@ function resetQrPreview() {
   downloadQr.removeAttribute("href");
 }
 
+function resetApiKeyResult() {
+  apiKeyResult.hidden = true;
+  apiKeyOutput.textContent = "";
+  apiKeyCreated.textContent = "";
+}
+
 async function showQrPreview(shortId) {
   const qrUrl = getQrUrl(shortId);
   const response = await fetch(qrUrl, {
@@ -342,6 +361,11 @@ function formatDateLabel(value) {
     hour: "numeric",
     minute: "2-digit",
   });
+}
+
+function formatApiKeyCreatedAt(value) {
+  const label = formatDateLabel(value);
+  return label ? `Created ${label}` : "Created just now";
 }
 
 function buildLinkRecordFromApi(link) {
@@ -700,6 +724,26 @@ function renderExpandedUrl(data, elements) {
   }
 
   elements.result.hidden = false;
+}
+
+function renderApiKey(data) {
+  apiKeyOutput.textContent = data.apiKey || "";
+  apiKeyCreated.textContent = formatApiKeyCreatedAt(data.createdAt);
+  apiKeyResult.hidden = false;
+}
+
+async function generateApiKey() {
+  const response = await fetch("/api/key/generate", {
+    method: "POST",
+    credentials: "same-origin",
+  });
+  const data = await readJson(response);
+
+  if (!response.ok) {
+    throw new Error(data.error || "Unable to generate an API key right now.");
+  }
+
+  return data;
 }
 
 async function expandUrl(url, elements) {
@@ -1066,6 +1110,33 @@ analyticsForm.addEventListener("submit", async (event) => {
     await loadAnalytics(shortId);
   } catch (error) {
     setStatus(analyticsStatus, error.message || "Unable to load analytics.", "error");
+  }
+});
+
+apiKeyForm.addEventListener("submit", async (event) => {
+  event.preventDefault();
+
+  resetApiKeyResult();
+  setApiKeyBusy(true);
+  setStatus(apiKeyStatus, "Generating API key...", "");
+
+  try {
+    const data = await generateApiKey();
+    renderApiKey(data);
+    setStatus(apiKeyStatus, "API key generated.", "success");
+  } catch (error) {
+    setStatus(apiKeyStatus, error.message || "Unable to generate API key.", "error");
+  } finally {
+    setApiKeyBusy(false);
+  }
+});
+
+copyApiKey.addEventListener("click", async () => {
+  try {
+    await copyText(apiKeyOutput.textContent);
+    setStatus(apiKeyStatus, "API key copied.", "success");
+  } catch (error) {
+    setStatus(apiKeyStatus, "Unable to copy API key automatically.", "error");
   }
 });
 

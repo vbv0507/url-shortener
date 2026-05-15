@@ -601,6 +601,34 @@
             box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.72);
         }
 
+        .api-key-box {
+            display: grid;
+            gap: 10px;
+        }
+
+        .api-key-output {
+            width: 100%;
+            min-height: 54px;
+            padding: 16px 18px;
+            border-radius: var(--radius-md);
+            border: 1px solid rgba(24, 31, 38, 0.1);
+            background: rgba(255, 255, 255, 0.84);
+            color: var(--text);
+            font-family: Consolas, "Courier New", monospace;
+            font-size: 0.94rem;
+            line-height: 1.5;
+            word-break: break-all;
+            user-select: all;
+        }
+
+        .api-key-warning {
+            margin: 0;
+            color: var(--danger);
+            font-size: 0.86rem;
+            font-weight: 700;
+            line-height: 1.55;
+        }
+
         .qr-section {
             display: grid;
             gap: 14px;
@@ -1598,6 +1626,31 @@
 
                             <div id="analytics-empty" class="empty-history" hidden>No visits recorded yet for this short URL.</div>
                             <ul id="analytics-history" class="timeline"></ul>
+                        </section>
+                    </article>
+
+                    <article class="card">
+                        <h2>API key</h2>
+                        <p>Create a private key for using urlzap from your own tools and scripts.</p>
+
+                        <form id="api-key-form" class="form-grid">
+                            <button type="submit" class="submit-button">Generate API Key</button>
+                        </form>
+
+                        <p id="api-key-status" class="status" role="status" aria-live="polite"></p>
+
+                        <section id="api-key-result" class="result-card" hidden>
+                            <span class="section-label">New API Key</span>
+                            <div class="api-key-box">
+                                <code id="api-key-output" class="api-key-output"></code>
+                                <p class="api-key-warning">Copy this key now. For your safety, it will only be shown once.</p>
+                            </div>
+                            <div class="result-meta">
+                                <span id="api-key-created" class="meta-chip"></span>
+                            </div>
+                            <div class="actions">
+                                <button type="button" id="copy-api-key" class="secondary-button">Copy API Key</button>
+                            </div>
                         </section>
                     </article>
 

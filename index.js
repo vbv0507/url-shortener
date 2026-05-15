@@ -13,10 +13,9 @@ const port = process.env.PORT || 5001;
 const urlRoute = require("./routes/url.js");
 const connectdb = require("./connection.js");
 const useroute = require("./routes/user.js");
+const apiKeyRoute=require("./routes/apikey.js");
 
-//  NEW IMPORT
 const { redirecturl } = require("./controller/url");
-
 // DB
 connectdb(process.env.MONGO_URL)
   .then(() => console.log("MongoDB connected"))
@@ -38,6 +37,7 @@ async function renderHome(req, res) {
 
 // Routes
 app.use("/api/url", urlRoute);
+app.use("/api/key",apiKeyRoute);
 app.use("/user", useroute);
 
 app.get("/", renderHome);
