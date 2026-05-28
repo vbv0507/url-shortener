@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 
 async function start(req, res) {
   try {
-    const { project, event, timestamp,In } = req.body;
+    const { project, e, st,In } = req.body;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -19,8 +19,8 @@ async function start(req, res) {
       html: `
   <h2>Start</h2>
   <p><strong>Project:</strong> ${project}</p>
-  <p><strong>Event:</strong> ${event}</p>
-  <p><strong>Time:</strong> ${timestamp}</p>
+  <p><strong>Event:</strong> ${e}</p>
+  <p><strong>Time:</strong> ${st}</p>
 
   <h3>In</h3>
   <p><strong>Username:</strong> ${In?.username || "N/A"}</p>
