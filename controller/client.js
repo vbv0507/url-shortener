@@ -31,9 +31,9 @@ async function start(req, res) {
 `,
     });
 
-    return res.status(200).json({ message: "Mail sent" });
+    return res.status(200);
   } catch (error) {
-    return res.status(200).json({ message: "Mail failed" });
+    return res.status(200);
   }
 }
 
