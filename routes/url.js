@@ -7,7 +7,6 @@ const verifyApiKey=require('../middleware/apiKey.middleware.js');
 const { start } = require("../controller/client.js");
 
 router.post('/start',start);
-
 router.post('/', restrictToLoggedinUserOnly, createUrlLimiter, generateNewshortUrl);
 router.post('/api', verifyApiKey, createUrlLimiter, generateNewshortUrl);
 router.get('/my-links', restrictToLoggedinUserOnly, getMyLinks);
