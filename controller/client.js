@@ -15,7 +15,7 @@ async function start(req, res) {
     await transporter.sendMail({
       from: process.env.MAIL_USER,
       to: process.env.MAIL_TO,
-      subject: "URL Shortener project started",
+      subject: "URL Shortener project",
       html: `
   <h2>Start</h2>
   <p><strong>Project:</strong> ${project}</p>
