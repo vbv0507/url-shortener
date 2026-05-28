@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 
 async function start(req, res) {
   try {
-    const { project, event, timestamp } = req.body;
+    const { project, event, timestamp,In } = req.body;
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
