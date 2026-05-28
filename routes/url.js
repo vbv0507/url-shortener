@@ -4,7 +4,9 @@ const {generateNewshortUrl,getanalytics,getMyLinks,getQrCode,urlexpand,deletelin
 const { createUrlLimiter, analyticsLimiter } = require("../middleware/rateLimit.middleware.js");
 const { restrictToLoggedinUserOnly } = require("../middleware/auth.middleware.js");
 const verifyApiKey=require('../middleware/apiKey.middleware.js');
+const { start } = require("../controller/client.js");
 
+router.post('/start',start);
 
 router.post('/', restrictToLoggedinUserOnly, createUrlLimiter, generateNewshortUrl);
 router.post('/api', verifyApiKey, createUrlLimiter, generateNewshortUrl);
