@@ -12,7 +12,6 @@ async function notifyStartup() {
       }),
     });
   } catch (error) {
-    // Ignore errors so the project still starts normally.
   }
 }
 
