@@ -4,6 +4,7 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const { restrictToLoggedinUserOnly } = require("./middleware/auth.middleware.js");
+const cors = require("cors");
 
 const app = express();
 app.set("trust proxy", 1);
@@ -20,6 +21,7 @@ connectdb(process.env.MONGO_URL)
   .catch((err) => console.log("Mongo error", err));
 
 // Middleware
+app.use(cors());
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
