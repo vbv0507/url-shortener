@@ -14,6 +14,7 @@ const port = process.env.PORT || 5001;
 const urlRoute = require("./routes/url.js");
 const connectdb = require("./connection.js");
 const useroute = require("./routes/user.js");
+const healthRoute = require("./routes/health.js");
 const { redirecturl } = require("./controller/url");
 // DB
 connectdb(process.env.MONGO_URL)
@@ -36,6 +37,7 @@ async function renderHome(req, res) {
 }
 
 // Routes
+app.use("/health", healthRoute);
 app.use("/api/url", urlRoute);
 app.use("/user", useroute);
 
