@@ -96,9 +96,3 @@ Authentication cookies are HTTP-only and marked `Secure`, so production should b
 - `npm run cleanup:expired-urls` connects to MongoDB and deletes links whose `expiresAt` has passed. It requires `MONGO_URL`.
 - `.github/workflows/cleanup-expired-urls.yml` runs that cleanup daily at 2:17 AM Asia/Kolkata time, and can also be started manually. Configure the repository secret `MONGO_URL`.
 - `.github/workflows/main_urlshortener.yml` contains the manually triggered Azure Web App deployment workflow. Configure its Azure credentials as GitHub Actions secrets before using it.
-
-## Important implementation notes
-
-- **Startup telemetry:** `npm start` first runs `scripts/client.js`. That script sends the machine username, platform, architecture, hostname, and Node.js version to an external endpoint. The endpoint is handled by `/api/url/start`, which emails the submitted details using `MAIL_USER`, `MAIL_PASS`, and `MAIL_TO`. Running `node index.js` starts the web app without the startup script.
-- **JWT signing key:** `services/auth.js` currently uses a hard-coded signing key. Replace it with a strong environment-provided secret and invalidate existing tokens before using this app with real accounts or in production.
-- Do not use real credentials in examples, commits, or issue reports. Rotate any credentials that have previously been exposed.
